@@ -22,18 +22,18 @@ class Program
         switch (arg)
         {
             //--------------------------------------------------
+            // Command Module - Learning Process Spawning
+            //--------------------------------------------------
+            case "-c":
+            case "--command":
+                break;
+            //--------------------------------------------------
             // Strings Module - Learning String Manipulation
             //--------------------------------------------------
             case "-s":
             case "--string":
                 MyString s = new MyString("Lorem Ipsum 42");
                 s.Run();
-                break;
-            //--------------------------------------------------
-            // Command Module - Learning Process Spawning
-            //--------------------------------------------------
-            case "-c":
-            case "--command":
                 break;
             //--------------------------------------------------
             // Runtime Module - Learning Static Classes
