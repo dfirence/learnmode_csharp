@@ -18,7 +18,7 @@ class Program
             return;
         }
 
-        switch (arg[0])
+        switch (args[0])
         {
             //--------------------------------------------------
             // Command Module - Learning Process Spawning
