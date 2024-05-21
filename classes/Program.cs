@@ -36,7 +36,7 @@ class Program
             case "--command":
                 break;
             //--------------------------------------------------
-            // Command Module - Learning Process Spawning
+            // Runtime Module - Learning Static Classes
             //--------------------------------------------------
             case "-r":
             case "--runtime":
