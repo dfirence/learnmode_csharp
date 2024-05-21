@@ -1,0 +1,20 @@
+----------------------------------------------------------------
+                        Strings Module - MyString
+----------------------------------------------------------------
+
+
+String Value    : Lorem Ipsum 42
+String Length   : 14
+Chars Count     : 14
+Bytes Count     : 14
+Bytes (Decimal) : [ 76 111 114 101 109 32 73 112 115 117 109 32 52 50 ]
+Bytes (Hex)     : [ 4C 6F 72 65 6D 20 49 70 73 75 6D 20 34 32 ]
+
+
+Get Vowels > [ o, e, i, u ]
+
+ToBase64 > TG9yZW0gSXBzdW0gNDI=
+
+LowerCase > lorem ipsum 42
+
+UpperCase > LOREM IPSUM 42

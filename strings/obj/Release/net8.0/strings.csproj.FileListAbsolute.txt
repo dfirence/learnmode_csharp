@@ -1,0 +1,14 @@
+/Users/dfirence/Documents/my_code/csharp/learning/strings/bin/Release/net8.0/strings
+/Users/dfirence/Documents/my_code/csharp/learning/strings/bin/Release/net8.0/strings.deps.json
+/Users/dfirence/Documents/my_code/csharp/learning/strings/bin/Release/net8.0/strings.runtimeconfig.json
+/Users/dfirence/Documents/my_code/csharp/learning/strings/bin/Release/net8.0/strings.dll
+/Users/dfirence/Documents/my_code/csharp/learning/strings/bin/Release/net8.0/strings.pdb
+/Users/dfirence/Documents/my_code/csharp/learning/strings/obj/Release/net8.0/strings.GeneratedMSBuildEditorConfig.editorconfig
+/Users/dfirence/Documents/my_code/csharp/learning/strings/obj/Release/net8.0/strings.AssemblyInfoInputs.cache
+/Users/dfirence/Documents/my_code/csharp/learning/strings/obj/Release/net8.0/strings.AssemblyInfo.cs
+/Users/dfirence/Documents/my_code/csharp/learning/strings/obj/Release/net8.0/strings.csproj.CoreCompileInputs.cache
+/Users/dfirence/Documents/my_code/csharp/learning/strings/obj/Release/net8.0/strings.dll
+/Users/dfirence/Documents/my_code/csharp/learning/strings/obj/Release/net8.0/refint/strings.dll
+/Users/dfirence/Documents/my_code/csharp/learning/strings/obj/Release/net8.0/strings.pdb
+/Users/dfirence/Documents/my_code/csharp/learning/strings/obj/Release/net8.0/strings.genruntimeconfig.cache
+/Users/dfirence/Documents/my_code/csharp/learning/strings/obj/Release/net8.0/ref/strings.dll

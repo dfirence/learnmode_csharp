@@ -1,0 +1,14 @@
+/Users/dfirence/Documents/my_code/csharp/learning/cli_args/bin/Debug/net8.0/cli_args
+/Users/dfirence/Documents/my_code/csharp/learning/cli_args/bin/Debug/net8.0/cli_args.deps.json
+/Users/dfirence/Documents/my_code/csharp/learning/cli_args/bin/Debug/net8.0/cli_args.runtimeconfig.json
+/Users/dfirence/Documents/my_code/csharp/learning/cli_args/bin/Debug/net8.0/cli_args.dll
+/Users/dfirence/Documents/my_code/csharp/learning/cli_args/bin/Debug/net8.0/cli_args.pdb
+/Users/dfirence/Documents/my_code/csharp/learning/cli_args/obj/Debug/net8.0/cli_args.GeneratedMSBuildEditorConfig.editorconfig
+/Users/dfirence/Documents/my_code/csharp/learning/cli_args/obj/Debug/net8.0/cli_args.AssemblyInfoInputs.cache
+/Users/dfirence/Documents/my_code/csharp/learning/cli_args/obj/Debug/net8.0/cli_args.AssemblyInfo.cs
+/Users/dfirence/Documents/my_code/csharp/learning/cli_args/obj/Debug/net8.0/cli_args.csproj.CoreCompileInputs.cache
+/Users/dfirence/Documents/my_code/csharp/learning/cli_args/obj/Debug/net8.0/cli_args.dll
+/Users/dfirence/Documents/my_code/csharp/learning/cli_args/obj/Debug/net8.0/refint/cli_args.dll
+/Users/dfirence/Documents/my_code/csharp/learning/cli_args/obj/Debug/net8.0/cli_args.pdb
+/Users/dfirence/Documents/my_code/csharp/learning/cli_args/obj/Debug/net8.0/cli_args.genruntimeconfig.cache
+/Users/dfirence/Documents/my_code/csharp/learning/cli_args/obj/Debug/net8.0/ref/cli_args.dll
