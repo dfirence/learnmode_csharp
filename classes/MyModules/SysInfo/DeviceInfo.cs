@@ -11,6 +11,10 @@ namespace MyModules.SysInfo.DeviceInfo;
 /// </summary>
 public class DeviceRuntime
 {
+    //------------------------------------------------------------------------
+    // Static Class Properties: ReadOnly Access
+    //------------------------------------------------------------------------
+
     /// <summary>
     /// Current Process Bits: 32 or 64 bits as boolean value
     /// </summary>
@@ -76,14 +80,34 @@ public class DeviceRuntime
     /// </summary>
     public static readonly string OSVersion
         = Environment.OSVersion.ToString();
+
+    /// <summary>
+    /// Current Process CommandLine string
+    /// </summary>
     public static readonly string CommandLine
         = Environment.CommandLine;
+
+    /// <summary>
+    /// Current Process Execution Path (absolute) string
+    /// </summary>
     public static readonly string? ProcessPath
         = Environment.ProcessPath;
+
+    /// <summary>
+    /// Current Directory where Process is executing from
+    /// </summary>
     public static readonly string CurrentDirectory
         = Environment.CurrentDirectory;
+
+    /// <summary>
+    /// Current Device's System Directory Path (absolute)
+    /// </summary>
     public static readonly string SystemDirectory
         = Environment.SystemDirectory;
+
+    //------------------------------------------------------------------------
+    // Static Class Methods: Functional Behaviors Of This Class
+    //------------------------------------------------------------------------
 
     /// <summary>
     /// Run Method, when this class is invoked then this method
@@ -93,6 +117,7 @@ public class DeviceRuntime
     {
         WriteLine(
             $@"
+
             ------------------------------------------------------------------------
                                     Device Runtime Profile
             ------------------------------------------------------------------------
