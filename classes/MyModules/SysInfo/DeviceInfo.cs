@@ -2,7 +2,9 @@ using System;
 using System.Runtime.InteropServices;
 using static System.Console;
 
+
 namespace MyModules.SysInfo.DeviceInfo;
+
 
 /// <summary>
 /// DeviceRuntime Class represents details
@@ -141,6 +143,7 @@ public class DeviceRuntime
             Directory (Current)     : {CurrentDirectory}
             Directory (System)      : {SystemDirectory}
             ------------------------------------------------------------------------
+            
             "
         );
     }

@@ -12,14 +12,13 @@ class Program
     /// <param name="args">stdin arguments</param>
     public static void Main(string[] args)
     {
-        if (args.Length == 0 || args.Length > 1)
+        if (args.Length != 1)
         {
             Program.Banner();
             return;
         }
-        string arg = args[0];
 
-        switch (arg)
+        switch (arg[0])
         {
             //--------------------------------------------------
             // Command Module - Learning Process Spawning
