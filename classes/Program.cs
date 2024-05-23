@@ -31,7 +31,7 @@ class Program
             //--------------------------------------------------
             case "-s":
             case "--string":
-                MyString s = new MyString("Lorem Ipsum 42");
+                MyString s = new ("Lorem Ipsum 42");
                 s.Run();
                 break;
             //--------------------------------------------------
