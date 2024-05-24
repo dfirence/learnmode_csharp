@@ -1,1 +1,2 @@
-classes/obj/
+./classes/obj/*
+./null_binary/obj/*
