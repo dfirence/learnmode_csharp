@@ -1,8 +1,11 @@
-﻿using MyModules.Strings;
+﻿using MyModules.Command;
+using MyModules.Strings;
 using MyModules.SysInfo.DeviceInfo;
+using MyModules.Filesystem.Enumeration;
+using MyModules.Filesystem.Discovery;
 
 /// <summary>
-/// Main Program Class
+/// Main <c>Program</c> Class
 /// </summary>
 class Program
 {
@@ -14,25 +17,59 @@ class Program
     {
         if (args.Length != 1)
         {
-            Program.Banner();
+            Banner();
             return;
         }
 
         switch (args[0])
         {
             //--------------------------------------------------
-            // Command Module - Learning Process Spawning
+            // Command Module - Learning Process Spawning When
             //--------------------------------------------------
             case "-c":
             case "--command":
+                SpawnCommand.Run();
+                break;
+            //--------------------------------------------------
+            // Filesystem Module - Learning Filesystem Stuff
+            //--------------------------------------------------
+            case "-f1":
+            case "--special-folders":
+                new SpecialFolders().Run();
+                break;
+
+            case "-f2":
+            case "--file-create":
+                new FileProfile().Run();
+                break;
+
+            case "-f3":
+            case "--file-delete":
+                new FileProfile().DeleteFile();
+                break;
+
+            case "-f4":
+            case "--folder-delete":
+                new FileProfile().DeleteFolder();
+                break;
+
+            case "-f5":
+            case "--folder-enumerate":
+                new FileProfile().EnumerateFolder();
+                break;
+            //--------------------------------------------------
+            // Strings Module - Learning String Manipulation
+            //--------------------------------------------------      
+            case "-h":
+            case "--help":
+                Banner();
                 break;
             //--------------------------------------------------
             // Strings Module - Learning String Manipulation
             //--------------------------------------------------
             case "-s":
             case "--string":
-                MyString s = new MyString("Lorem Ipsum 42");
-                s.Run();
+                new MyString("Lorem Ipsum 42").Run();
                 break;
             //--------------------------------------------------
             // Runtime Module - Learning Static Classes
@@ -40,6 +77,9 @@ class Program
             case "-r":
             case "--runtime":
                 DeviceRuntime.Run();
+                break;
+            default:
+                Banner();
                 break;
         }
     }
@@ -49,7 +89,7 @@ class Program
     /// </summary>
     public static void Banner()
     {
-        string dashes = new string('-', 64);
+        string dashes = new('-', 64);
         Console.WriteLine(
             $@"
             {dashes}
@@ -60,8 +100,15 @@ class Program
             
             Usage:              classes.exe [switch]
 
-            -r, --runtime       Runs the runtime program - profiles the active process and its hosten environ;
-            -s, --strings       Runs the strings program - various methods to learn strings in C#;
+            -c, --command               Runs the spawn command program - executes a benign process given the hosted platform type;
+            -f1, --special-folders      Runs the filesystem program - enumerates default special folders on the hosted platform;
+            -f2, --file-create          Runs the filesystem program - creates a file, gets its metadata;
+            -f3, --file-delete          Runs the filesystem program - deletes file previously created in `-f2` option;
+            -f4, --folder-delete        Runs the filesystem program - deletes folder previously created in `-f2`;
+            -f5, --folder-enumerate     Runs the filesystem program - enumerates folder for its filesystem entries;
+            -h, --help                  Runs the banner module;
+            -r, --runtime               Runs the runtime program - profiles the active process and its hosted environment;
+            -s, --strings               Runs the strings program - various methods to learn strings in C#;
             "
         );
     }

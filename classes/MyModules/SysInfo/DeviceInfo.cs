@@ -7,7 +7,7 @@ namespace MyModules.SysInfo.DeviceInfo;
 
 
 /// <summary>
-/// DeviceRuntime Class represents details
+/// <c>DeviceRuntime</c> Class represents details
 /// about the current program and its hosted
 /// environment - i.e., device.
 /// </summary>

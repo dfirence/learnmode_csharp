@@ -1,6 +1,5 @@
 using static System.Console;
 using System.Text;
-using System.Runtime.InteropServices;
 
 namespace MyModules.Strings;
 
@@ -11,14 +10,14 @@ namespace MyModules.Strings;
 public class MyString
 {
     /// <summary>
-    /// String Value used to evaluate different methods
+    /// String _value used to evaluate different methods
     /// </summary>
-    private readonly string Value = string.Empty;
+    private readonly string _value = string.Empty;
 
     /// <summary>
-    /// Length of String Value
+    /// _length of String _value
     /// </summary>
-    private readonly int Length = 0;
+    private readonly int _length = 0;
 
     /// <summary>
     /// Name of Class used in this module
@@ -36,8 +35,8 @@ public class MyString
     /// <param name="s">String To Initialize</param>
     public MyString(string s)
     {
-        this.Value = s.Trim();
-        this.Length = this.Value.Length;
+        this._value = s.Trim();
+        this._length = this._value.Length;
         this.className = this.GetType().Name;
     }
 
@@ -57,36 +56,36 @@ public class MyString
     }
 
     /// <summary>
-    /// Convert internal Value to Bytes
+    /// Convert internal _value to Bytes
     /// </summary>
     public void GetBytes()
     {
-        byte[] bytes = Encoding.ASCII.GetBytes(this.Value);
+        byte[] bytes = Encoding.ASCII.GetBytes(this._value);
         int chars_count = Encoding.ASCII.GetCharCount(bytes);
-        int bytes_count = Encoding.ASCII.GetByteCount(this.Value);
-        string values = string.Join(" ", bytes);
+        int bytes_count = Encoding.ASCII.GetByteCount(this._value);
+        string _values = string.Join(" ", bytes);
         string hex_values = string.Join(" ", bytes.Select(b => $"{b:X}").ToArray());
 
         this.Display(
             $@"
-            String Value    : {this.Value}
-            String Length   : {this.Length}
-            Chars Count     : {chars_count}
-            Bytes Count     : {bytes_count}
-            Bytes (Decimal) : [ {values} ]
-            Bytes (Hex)     : [ {hex_values} ]
+            String _value    : {this._value}
+            String _length   : {this._length}
+            Chars Count      : {chars_count}
+            Bytes Count      : {bytes_count}
+            Bytes (Decimal)  : [ {_values} ]
+            Bytes (Hex)      : [ {hex_values} ]
             "
         );
     }
 
     /// <summary>
-    /// Gets Vowels contained in the Value
+    /// Gets Vowels contained in the _value
     /// </summary>
     public void GetVowels()
     {
         char[] vowels = { 'a', 'e', 'i', 'o', 'u' };
 
-        char[] chars = this.Value.ToLower()
+        char[] chars = this._value.ToLower()
                            .ToCharArray()
                            .Where(c => vowels.Contains(c))
                            .ToArray();
@@ -95,12 +94,12 @@ public class MyString
         );
     }
     /// <summary>
-    /// Custom CSV of Character, Decimal, Hex Value
+    /// Custom CSV of Character, Decimal, Hex _value
     /// </summary>
     public void ToCsv()
     {
 
-        byte[] bytes = Encoding.ASCII.GetBytes(this.Value);
+        byte[] bytes = Encoding.ASCII.GetBytes(this._value);
         string csv = "\"Character\",\"Byte_Decimal\",\"Byte_Hex\"\n";
         csv += string.Join("", bytes.Select(
             b => $"\t\t\"{(char)b}\",\"{b}\",\"{b:X}\"\n"
@@ -110,11 +109,11 @@ public class MyString
     }
 
     /// <summary>
-    /// Converts the value into a base64 string
+    /// Converts the _value into a base64 string
     /// </summary>
     public void ToBase64()
     {
-        byte[] bytes = Encoding.ASCII.GetBytes(this.Value);
+        byte[] bytes = Encoding.ASCII.GetBytes(this._value);
         string b64 = Convert.ToBase64String(bytes);
         this.Display(
             $"ToBase64 > {b64}"
@@ -122,22 +121,22 @@ public class MyString
     }
 
     /// <summary>
-    /// Converts the value to lowercase
+    /// Converts the _value to lowercase
     /// </summary>
     public void ToLowerCase()
     {
         this.Display(
-            $"LowerCase > {this.Value.ToLower()}"
+            $"LowerCase > {this._value.ToLower()}"
         );
     }
 
     /// <summary>
-    /// Converts the value to uppercase
+    /// Converts the _value to uppercase
     /// </summary>
     public void ToUpperCase()
     {
         this.Display(
-            $"UpperCase > {this.Value.ToUpper()}"
+            $"UpperCase > {this._value.ToUpper()}"
         );
     }
 
