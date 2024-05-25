@@ -5,8 +5,8 @@ namespace MyModules.Filesystem.Discovery;
 
 public class FileProfile : LearnModeObject
 {
-    private readonly string tfd = $@"{Environment.CurrentDirectory}\testMyData";
-    private readonly string tff = $@"{Environment.CurrentDirectory}\testMyData\testFile42.txt";
+    private readonly string tfd = $@"{Environment.CurrentDirectory}/testMyData";
+    private readonly string tff = $@"{Environment.CurrentDirectory}/testMyData/testFile42.txt";
     public override void Run()
     {
         // (1) Check if TestFolder Exists
