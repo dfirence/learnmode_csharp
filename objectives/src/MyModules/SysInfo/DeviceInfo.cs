@@ -1,7 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
-using static System.Console;
 
+using static System.Console;
+using static System.IO.Path;
 
 namespace MyModules.SysInfo.DeviceInfo;
 
@@ -90,7 +91,7 @@ public class DeviceRuntime
     /// Current Process CommandLine string
     /// </summary>
     public static readonly string CommandLine
-        = Environment.CommandLine;
+        = Environment.CommandLine.Split(DirectorySeparatorChar).Last<string>();
 
     /// <summary>
     /// Current Process Execution Path (absolute) string
@@ -131,7 +132,7 @@ public class DeviceRuntime
             Username                : {UserName}
 
             OS Platform Type        : {OSVersion}
-            OS Description          : {OSDescription.ToLower()}
+            OS Description          : {OSDescription}
             OS Is64Bit              : {Is64BitOperatingSystem}
             OS Memory Page Size     : {SystemPageSize} Bytes
 
