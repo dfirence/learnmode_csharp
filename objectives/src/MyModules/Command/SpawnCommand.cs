@@ -1,9 +1,8 @@
 using System.Diagnostics;
 using static System.Console;
-using static System.Diagnostics.Process;
-
 
 namespace MyModules.Command;
+
 
 /// <summary>
 /// SpawnCommand Class. Used to spawn new processes.
@@ -25,6 +24,10 @@ public class SpawnCommand
         Display(cmd);
         ExecuteProgram(cmd);
     }
+    /// <summary>
+    /// Template String for stdout
+    /// </summary>
+    /// <param name="s"></param>
     public static void Display(string s)
     {
         string dashes = new('-', 64);
@@ -37,7 +40,12 @@ public class SpawnCommand
             "
         );
     }
-
+    /// <summary>
+    /// Determines which command to run based on
+    /// the platform this program is running under.
+    /// </summary>
+    /// <param name="os"></param>
+    /// <returns>string</returns>
     public static string GetCommandByPlatform(string os)
     {
         string cmd = string.Empty;
@@ -45,12 +53,16 @@ public class SpawnCommand
         {
             cmd = @"C:\Windows\System32\ipconfig.exe";
         }
-        else if (cmd.Contains("Unix"))
+        else if (os.Contains("Unix"))
         {
-            cmd = @"/sbin/ifconfig";
+            cmd = @"whoami";
         }
         return cmd;
     }
+    /// <summary>
+    /// Executes or spawns a new process based.
+    /// </summary>
+    /// <param name="os"></param>
     public static void ExecuteProgram(string os)
     {
         try
