@@ -35,6 +35,9 @@ public class DeviceRuntime
     public static readonly bool IsPrivilegedProcess
         = Environment.IsPrivilegedProcess;
 
+    public static readonly string OSDescription
+        = RuntimeInformation.OSDescription;
+
     /// <summary>
     /// Operating System Memory Page Size in bytes as int
     /// </summary>
@@ -127,10 +130,11 @@ public class DeviceRuntime
             User Domain Name        : {UserDomainName}
             Username                : {UserName}
 
+            OS Platform Type        : {OSVersion}
+            OS Description          : {OSDescription.ToLower()}
             OS Is64Bit              : {Is64BitOperatingSystem}
             OS Memory Page Size     : {SystemPageSize} Bytes
-            OS Platform Type        : {OSVersion}
-            
+
             .NET CLR Version        : {Version}
             .NET Runtime            : {Runtime}
 
