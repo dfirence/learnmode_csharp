@@ -118,15 +118,19 @@ class Program
             Usage:              classes.exe [switch]
 
             -c,  --command              Runs the spawn command program - executes a benign process given the hosted platform type;
+            
             -f1, --special-folders      Runs the filesystem program - enumerates default special folders on the hosted platform;
             -f2, --file-create          Runs the filesystem program - creates a file, gets its metadata;
             -f3, --file-delete          Runs the filesystem program - deletes file previously created in `-f2` option;
             -f4, --folder-delete        Runs the filesystem program - deletes folder previously created in `-f2`;
             -f5, --folder-enumerate     Runs the filesystem program - enumerates folder for its filesystem entries;
+            
             -h,  --help                 Runs the banner module;
+            
             -p,  --get-processes        Runs the process program - enumerates running processes on the hosted platform;
             -p1, --get-process-by-name  Runs the process program - gets a process instance by name;
             -p2, --get-process-by-pid   Runs the process program - gets a process instance by PID;
+            
             -r,  --runtime              Runs the runtime program - profiles the active process and its hosted environment;
             -s,  --strings              Runs the strings program - various methods to learn strings in C#;
             "

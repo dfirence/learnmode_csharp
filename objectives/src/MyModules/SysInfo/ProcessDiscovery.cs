@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using System.Runtime.InteropServices;
+
 using Common;
 
 
@@ -15,8 +15,7 @@ public class ProcessDiscovery : MyAbstractClass
         Process[] processes = Process.GetProcesses().OrderBy(x => x.ProcessName).ToArray<Process>();
         Display($"{processes.Length} Processes\n");
 
-        string headers = $"\n\t\t{"StarTime",-20}\t{"PID",-15}{"ProcessName",-32}\n";
-        Console.WriteLine(headers);
+        string processListing = $"\n\t\t{"StarTime",-20}\t{"PID",-15}{"ProcessName",-32}\n";
 
         foreach (var p in processes)
         {
@@ -28,9 +27,8 @@ public class ProcessDiscovery : MyAbstractClass
             {
                 if (!string.IsNullOrEmpty(p.ProcessName))
                 {
-                    Console.WriteLine(
-                        $"\t\t{p.StartTime}\tPID {p.Id,-10}{p.ProcessName,-32} => {p.HasExited,5}{p.HandleCount,5}"
-                    );
+                    processListing
+                    += $"\n\t\t{p.StartTime}\tPID {p.Id,-10}{p.ProcessName,-32} => {p.HasExited,5}{p.HandleCount,5}";
                 }
             }
             catch (Exception e)
@@ -38,6 +36,7 @@ public class ProcessDiscovery : MyAbstractClass
                 Console.WriteLine($"\t\tPID {p.Id} => Warning!!! {e.Message}");
             }
         }
+        Console.WriteLine(processListing);
     }
     /// <summary>
     /// Gets a Process instance by name (string)
@@ -53,7 +52,7 @@ public class ProcessDiscovery : MyAbstractClass
             return;
         }
         processName = processName.Trim();
-        Process[] processes = Process.GetProcessesByName(processName);
+        Process[] processes = Process.GetProcessesByName(processName).OrderBy(x => x.ToString()).ToArray();
 
         if (processes.Length == 0)
         {
@@ -113,7 +112,13 @@ public class ProcessDiscovery : MyAbstractClass
         }
     showProcessDetails:
         string modules = $"\n\n\t\t{"EntryPoint",-16}{"Base",-16}{"Module (DLL) Name",-32}{"Module (DLL) Path"}\n";
-        foreach (ProcessModule m in p.Modules)
+
+        // Sort Module Entries Alphabetically By Module name
+        ProcessModule[]? items = p.Modules.Cast<ProcessModule>()
+            .OrderBy(x => x.ModuleName)
+            .ToArray();
+
+        foreach (ProcessModule m in items)
         {
             string ep = $"{m.EntryPointAddress:X}";
             string ba = $"{m.BaseAddress:X}";
