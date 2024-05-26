@@ -19,11 +19,22 @@ public class ProcessDiscovery : MyAbstractClass
 
         foreach (var p in processes)
         {
-            if (!string.IsNullOrEmpty(p.ProcessName))
+            if (p.Id == 0) {
+                continue;
+            }
+            try
             {
-                Console.WriteLine(
-                    $"\t\t{p.StartTime}\tPID {p.Id,-10}{p.ProcessName,-32} => {p.HasExited,5}{p.HandleCount,5}"
-                );
+                if (!string.IsNullOrEmpty(p.ProcessName))
+                {
+                    Console.WriteLine(
+                        $"\t\t{p.StartTime}\tPID {p.Id,-10}{p.ProcessName,-32} => {p.HasExited,5}{p.HandleCount,5}"
+                    );
+                }   
+            }
+            catch (Exception e)
+            {
+                
+                Console.WriteLine($"\t\tPID {p.Id} => Warning!!! {e.Message}");
             }
         }
     }
