@@ -1,31 +1,44 @@
+using static System.IO.Path;
 using Common;
 
 namespace MyModules.Filesystem.Discovery;
 
-
+/// <summary>
+/// Class <c>FileProfile</c> is used for basic
+/// learning of functionality on the filesystem
+/// </summary>
 public class FileProfile : MyAbstractClass
 {
-    private readonly string tfd = $@"{Environment.CurrentDirectory}/testMyData";
-    private readonly string tff = $@"{Environment.CurrentDirectory}/testMyData/testFile42.txt";
+    private readonly string testFolder
+        = $@"{Path.Join(Environment.CurrentDirectory, "testMyData")}";
+    private readonly string testFile
+        = $@"{Path.Join(Environment.CurrentDirectory, "testMyData", "testFile42.txt")}";
+
     public override void Run()
     {
-        if (!DoesDirectoryExist())          // (1) Check if TestFolder Exists
+        if (!DirectoryExists())
         {
-            if (!CreateDirectory(tfd))      // (2) Create Directory
+            if (!CreateDirectory(testFolder))
             {
                 return;
             }
         }
-        if (!File.Exists(tff))              // (3) Check if TestFile Exists
+        if (!File.Exists(testFile))
         {
-            if (!CreateFile(tff))
+            if (!CreateFile(testFile))
             {
                 return;
             }
         }
-        Display($"{tff}");
-        ShowFileAttributes(tff);            // (4) Get File Metadata - Pre
+        Display($"{testFile}");
+        ShowFileAttributes(testFile);
     }
+    /// <summary>
+    /// Creates a directory with basic error handling.
+    /// When successful true, false when failure.
+    /// </summary>
+    /// <param name="full_path"></param>
+    /// <returns>boolean</returns>
     public bool CreateDirectory(string full_path)
     {
         bool result = false;
@@ -40,6 +53,12 @@ public class FileProfile : MyAbstractClass
         }
         return result;
     }
+    /// <summary>
+    /// Creates a file with basic error handling.
+    /// When successful true, false when failure.
+    /// </summary>
+    /// <param name="full_path"></param>
+    /// <returns>boolean</returns>
     public bool CreateFile(string full_path)
     {
         bool result = false;
@@ -54,17 +73,22 @@ public class FileProfile : MyAbstractClass
         }
         return result;
     }
+    /// <summary>
+    /// Deletes the test file with basic error handling.
+    /// When successful true, false when failure.
+    /// </summary>
+    /// <returns>boolean</returns>
     public bool DeleteFile()
     {
-        if (!DoesDirectoryExist() || !File.Exists(tff))
+        if (!DirectoryExists() || !File.Exists(testFile))
         {
-            Display($"Target File To Delete Does Not Exist: {tff}");
+            Display($"Target File To Delete Does Not Exist: {testFile}");
             return false;
         }
         try
         {
-            File.Delete(tff);
-            Display($"Success: Deleted File {tff}");
+            File.Delete(testFile);
+            Display($"Success: Deleted File {testFile}");
             return true;
         }
         catch (Exception e)
@@ -73,21 +97,30 @@ public class FileProfile : MyAbstractClass
             return false;
         }
     }
+    /// <summary>
+    /// Deletes the test folder with basic error handling.
+    /// When successful true, false when failure.
+    /// </summary>
+    /// <returns>boolean</returns>
     public bool DeleteFolder()
     {
-        bool doesExist = DoesDirectoryExist();
+        bool doesExist = DirectoryExists();
         if (!doesExist)
         {
             return doesExist;
         }
-        int count = Directory.EnumerateFileSystemEntries(tfd).ToArray<string>().Length;
+        int count = Directory.EnumerateFileSystemEntries(testFolder).ToArray<string>().Length;
         bool isEmpty = count > 0 ? false : true;
         bool wantsForced = false;
         if (!isEmpty)
         {
             Console.Write("\n\nDirectory Is Not Empty - Wanna Delete Anyway? (Yes|No) >> ");
+
             string? answer = Console.ReadLine();
-            if (string.IsNullOrEmpty(answer) || answer.Trim().ToLower() != "y" && answer.Trim().ToLower() != "yes")
+
+            if (string.IsNullOrEmpty(answer) ||
+                answer.Trim().ToLower() != "y" &&
+                answer.Trim().ToLower() != "yes")
             {
                 return false;
             }
@@ -95,15 +128,15 @@ public class FileProfile : MyAbstractClass
         }
         try
         {
-            Directory.Delete(tfd, wantsForced);
-            if (Directory.Exists(tfd))
+            Directory.Delete(testFolder, wantsForced);
+            if (Directory.Exists(testFolder))
             {
                 Console.WriteLine("Very Weird, it should have deleted it...");
                 return false;
             }
             else
             {
-                Console.WriteLine($"Successfully Deleted: {tfd}");
+                Console.WriteLine($"Successfully Deleted: {testFolder}");
             }
             return true;
         }
@@ -113,21 +146,24 @@ public class FileProfile : MyAbstractClass
             return false;
         }
     }
+    /// <summary>
+    /// Enumerates the test folder and its entries.
+    /// </summary>
     public void EnumerateFolder()
     {
-        if (!DoesDirectoryExist())
+        if (!DirectoryExists())
         {
             return;
         }
 
         string target = Environment.OSVersion.ToString().Contains("Windows")
                             ? @"C:\Windows\System32"
-                            : tfd;
+                            : testFolder;
 
         string[] entries = Directory.EnumerateFileSystemEntries(target).ToArray();
         if (entries.Length == 0)
         {
-            Display($"Target Folder Is Empty: {tfd}");
+            Display($"Target Folder Is Empty: {testFolder}");
             return;
         }
 
@@ -144,15 +180,25 @@ public class FileProfile : MyAbstractClass
             "
         );
     }
-    public bool DoesDirectoryExist()
+    /// <summary>
+    /// Convenience helper method to validate folder existence.
+    /// If exists then true, else false.
+    /// </summary>
+    /// <returns>boolean</returns>
+    public bool DirectoryExists()
     {
-        bool doesExist = Directory.Exists(tfd);
+        bool doesExist = Directory.Exists(testFolder);
         if (!doesExist)
         {
-            Display($"Target Folder To Delete Does Not Exist: {tfd}");
+            Display($"Target Folder To Delete Does Not Exist: {testFolder}");
         }
         return doesExist;
     }
+    /// <summary>
+    /// Pretty string showing default file attributes available
+    /// with standard lib.
+    /// </summary>
+    /// <param name="full_path"></param>
     public void ShowFileAttributes(string full_path)
     {
         string dashes = new string('-', 64);
