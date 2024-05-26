@@ -119,6 +119,13 @@ public class ProcessDiscovery : MyAbstractClass
             string ba = $"{m.BaseAddress:X}";
             modules += $"\n\t\t{ba,-16}{ep,-16}{m.ModuleName,-24}\t{m.FileName}";
         }
+
+        string threads = $"";
+        foreach (ProcessThread t in p.Threads)
+        {
+            string sa = $"{t.StartAddress:X}";
+            threads += $"\n\t\t{t?.StartTime,-28}{t.Id,-12}{sa,-16}{t.ThreadState}";
+        }
         Display($@"
             Start Time      : {p.StartTime}
             Name            : {p.ProcessName}
@@ -127,9 +134,12 @@ public class ProcessDiscovery : MyAbstractClass
             Handles (Count) : {handlesCount}
             Modules (Count) : {modulesCount}
             Threads (Count) : {threadsCount}
-            -------------------------------------------------------------
+            --------------------------------------------------------------------
             Modules
             {modules}
+            --------------------------------------------------------------------
+            Threads
+            {threads}
         ");
     }
 }
