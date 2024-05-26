@@ -5,9 +5,9 @@ namespace MyModules.Filesystem.Enumeration;
 
 /// <summary>
 /// Class <c>SpecialFolders</c> now uses basic inheritance of
-/// the <c>LearnModeObject</c>.
+/// the <c>MyAbstractClass</c>.
 /// </summary>
-public class SpecialFolders : LearnModeObject
+public class SpecialFolders : MyAbstractClass
 {
     /// <summary>
     /// Overrides base class `Run()` method.
@@ -20,12 +20,12 @@ public class SpecialFolders : LearnModeObject
                           .Cast<Environment.SpecialFolder>()
                           .OrderBy(x => x.ToString());
 
-        foreach(var folder in folders)
+        foreach (var folder in folders)
         {
-            count  += 1;
-            values += $"\t\t{folder, -32} => \"{Environment.GetFolderPath(folder)}\"\n";
+            count += 1;
+            values += $"\t\t{folder,-32} => \"{Environment.GetFolderPath(folder)}\"\n";
         }
-        // Leverages through inheritance the `Display` method
+        // Inherited Method
         Display($"{count} Special Folders: {values}");
     }
 }

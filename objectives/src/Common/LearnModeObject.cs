@@ -1,6 +1,7 @@
 namespace Common;
 
-public abstract class LearnModeObject {
+public abstract class MyAbstractClass
+{
     public abstract void Run();
     public void Display(string s)
     {

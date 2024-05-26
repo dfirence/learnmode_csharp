@@ -3,23 +3,20 @@ using Common;
 namespace MyModules.Filesystem.Discovery;
 
 
-public class FileProfile : LearnModeObject
+public class FileProfile : MyAbstractClass
 {
     private readonly string tfd = $@"{Environment.CurrentDirectory}/testMyData";
     private readonly string tff = $@"{Environment.CurrentDirectory}/testMyData/testFile42.txt";
     public override void Run()
     {
-        // (1) Check if TestFolder Exists
-        if (!DoesDirectoryExist())
+        if (!DoesDirectoryExist())          // (1) Check if TestFolder Exists
         {
-            // (2) Create Directory
-            if (!CreateDirectory(tfd))
+            if (!CreateDirectory(tfd))      // (2) Create Directory
             {
                 return;
             }
         }
-        // (3) Check if TestFile Exists
-        if (!File.Exists(tff))
+        if (!File.Exists(tff))              // (3) Check if TestFile Exists
         {
             if (!CreateFile(tff))
             {
@@ -27,8 +24,7 @@ public class FileProfile : LearnModeObject
             }
         }
         Display($"{tff}");
-        // (4) Get File Metadata - Pre
-        ShowFileAttributes(tff);
+        ShowFileAttributes(tff);            // (4) Get File Metadata - Pre
     }
     public bool CreateDirectory(string full_path)
     {
