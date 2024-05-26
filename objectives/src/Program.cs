@@ -1,9 +1,9 @@
 ﻿using MyModules.Command;
-using MyModules.Strings;
-using MyModules.SysInfo.DeviceInfo;
 using MyModules.Filesystem.Enumeration;
 using MyModules.Filesystem.Discovery;
-
+using MyModules.Strings;
+using MyModules.SysInfo;
+using MyModules.SysInfo.DeviceInfo;
 
 /// <summary>
 /// Main <c>Program</c> Class
@@ -75,6 +75,13 @@ class Program
             //--------------------------------------------------
             // Runtime Module - Learning Static Classes
             //--------------------------------------------------
+            case "-p":
+            case "--get-processes":
+                new ProcessDiscovery().Run();
+                break;
+            //--------------------------------------------------
+            // Runtime Module - Learning Static Classes
+            //--------------------------------------------------
             case "-r":
             case "--runtime":
                 DeviceRuntime.Run();
@@ -108,6 +115,7 @@ class Program
             -f4, --folder-delete        Runs the filesystem program - deletes folder previously created in `-f2`;
             -f5, --folder-enumerate     Runs the filesystem program - enumerates folder for its filesystem entries;
             -h, --help                  Runs the banner module;
+            -p, --get-processes         Runs the process program - enumerates running processes on the hosted platform;
             -r, --runtime               Runs the runtime program - profiles the active process and its hosted environment;
             -s, --strings               Runs the strings program - various methods to learn strings in C#;
             "
