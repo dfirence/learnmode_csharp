@@ -79,6 +79,11 @@ public class ProcessDiscovery : MyAbstractClass
         }
         Console.WriteLine(results);
     }
+    /// <summary>
+    /// Get a Process Object By PID and use the managed methods
+    /// to extract its running profile - very basic compared to
+    /// unmanaged code.
+    /// </summary>
     public void GetProcessByPid()
     {
         Console.Write("\n\n\t\t(?) What is the PID >>> ");
@@ -110,6 +115,7 @@ public class ProcessDiscovery : MyAbstractClass
             Display($"Error - {e.Message}");
             return;
         }
+    // Code Label - Pretty Cool!
     showProcessDetails:
         string modules = $"\n\n\t\t{"EntryPoint",-16}{"Base",-16}{"Module (DLL) Name",-32}{"Module (DLL) Path"}\n";
 
