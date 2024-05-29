@@ -2,6 +2,10 @@ namespace Common;
 
 public abstract class MyAbstractClass
 {
+    public readonly string Platform
+        = Environment.OSVersion.Platform.ToString();
+
+
     public abstract void Run();
     public void Display(string s)
     {
