@@ -1,12 +1,9 @@
-#if WINDOWS
+
 namespace MyModules.WindowsEventLog;
+
 using System;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
-using System.Xml;
-
-
+using System.Text;
 using Common;
 /**
  * Must Add New Assembly:
@@ -34,7 +31,7 @@ public class EventlogConsumer : MyAbstractClass
         string query = eventFilter("5156");
         var eventsQuery
             = new EventLogQuery("Security", PathType.LogName, query);
-        
+
         var watcher = new EventLogWatcher(eventsQuery);
 
         watcher.EventRecordWritten
@@ -75,22 +72,28 @@ public class EventlogConsumer : MyAbstractClass
         if (fields == null) { return; }
 
         string process = ((string)fields[5]).Split('\\').Last();
-        string record  = GetHumanFriendlyRecord(ref fields);
+        fields[5] = process;
+        string record = GetHumanFriendlyRecord(in fields);
         Console.WriteLine(record);
     }
-    
-    public string GetHumanFriendlyRecord(ref IList<object> fields)
+
+    public string GetHumanFriendlyRecord(in IList<object> fields)
     {
-        return String.Format(
-            "{0}\t{1}\t{2}\t{3}\t{4}\t{5}",
-            fields[0], fields[1], fields[2], fields[3],
-            fields[4], fields[5]
-        );
+        int count = fields.Count();
+        var sb = new StringBuilder();
+        for (var i = 0; i < count; i++)
+        {
+            sb.Append($"\"{fields[i]}\",");
+        }
+        // Remove Last Character ","
+        sb.Remove(sb.Length - 1, 1);
+        sb.Append("\n");
+        return sb.ToString();
     }
 
     public IList<object>? GetFieldPropsFor(EventRecordWrittenEventArgs e)
     {
-        string[] props = new string[6];
+        string[] props = new string[11];
         props[0] = pathSystem("TimeCreated/@SystemTime");
         props[1] = pathSystem("Channel");
         props[2] = pathSystem("Computer");
@@ -105,6 +108,11 @@ public class EventlogConsumer : MyAbstractClass
             case 5156:
                 props[4] = pathData("ProcessId");
                 props[5] = pathData("Application");
+                props[6] = pathData("Protocol");
+                props[7] = pathData("SourceAddress");
+                props[8] = pathData("SourcePort");
+                props[9] = pathData("DestAddress");
+                props[10] = pathData("DestPort");
                 break;
         }
         //------------------------------------
@@ -124,4 +132,3 @@ public class EventlogConsumer : MyAbstractClass
         return eventFields;
     }
 }
-#endif

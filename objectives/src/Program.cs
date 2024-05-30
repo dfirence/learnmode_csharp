@@ -4,9 +4,10 @@ using MyModules.Filesystem.Discovery;
 using MyModules.Strings;
 using MyModules.SysInfo.DeviceInfo;
 
-#if WINDOWS
+
 using MyModules.WindowsEventLog;
-#endif
+
+
 /// <summary>
 /// Main <c>Program</c> Class
 /// </summary>
@@ -36,12 +37,11 @@ class Program
             //--------------------------------------------------
             // Windows Eventlog Module - Learning Eventlog Tasks
             //--------------------------------------------------
-#if WINDOWS
             case "-e":
             case "--eventlog-read":
                 new EventlogConsumer().Run();
                 break;
-#endif
+
             //--------------------------------------------------
             // Filesystem Module - Learning Filesystem Stuff
             //--------------------------------------------------
@@ -131,7 +131,7 @@ class Program
 
             -c,  --command              Runs the spawn command program - executes a benign process given the hosted platform type;
             
-            -e,  --eventlog-read        Runs the eventlog program - reads from eventlogs;
+            -e,  --eventlog-read        [windows only] Runs the eventlog program - reads from eventlogs;
             -f1, --special-folders      Runs the filesystem program - enumerates default special folders on the hosted platform;
             -f2, --file-create          Runs the filesystem program - creates a file, gets its metadata;
             -f3, --file-delete          Runs the filesystem program - deletes file previously created in `-f2` option;
