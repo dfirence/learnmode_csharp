@@ -54,8 +54,9 @@ public class EventlogConsumer : MyAbstractClass
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    public void cbOnEvent(object sender, EventRecordWrittenEventArgs e)
+    public void cbOnEvent(object? sender, EventRecordWrittenEventArgs e)
     {
+        if (sender == null) { return; }
         try
         {
             if (e.EventRecord == null) { return; }
