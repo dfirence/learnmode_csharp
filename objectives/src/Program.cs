@@ -3,9 +3,8 @@ using MyModules.Filesystem.Enumeration;
 using MyModules.Filesystem.Discovery;
 using MyModules.Strings;
 using MyModules.SysInfo.DeviceInfo;
-
-
 using MyModules.WindowsEventLog;
+using MyModules.Parsing.Json;
 
 
 /// <summary>
@@ -80,8 +79,13 @@ class Program
             // Strings Module - Learning String Manipulation
             //--------------------------------------------------
             case "-s":
-            case "--string":
+            case "--strings":
                 new MyString("Lorem Ipsum 42").Run();
+                break;
+
+            case "-s1":
+            case "--strings-json":
+                new ParserJson().Run();
                 break;
             //--------------------------------------------------
             // Process Module - Learning Static Classes
@@ -146,6 +150,7 @@ class Program
             
             -r,  --runtime              Runs the runtime program - profiles the active process and its hosted environment;
             -s,  --strings              Runs the strings program - various methods to learn strings in C#;
+            -s1, --strings-json         Runs the JSON parser program - serializes a class object to a JSON string;
             "
         );
     }
