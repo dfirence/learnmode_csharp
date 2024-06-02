@@ -68,6 +68,11 @@ class Program
             case "--folder-enumerate":
                 new FileProfile().EnumerateFolder();
                 break;
+
+            case "-f6":
+            case "--folder-watcher":
+                new FileWatch().Run();
+                break;
             //--------------------------------------------------
             // Strings Module - Learning String Manipulation
             //--------------------------------------------------      
@@ -141,7 +146,8 @@ class Program
             -f3, --file-delete          Runs the filesystem program - deletes file previously created in `-f2` option;
             -f4, --folder-delete        Runs the filesystem program - deletes folder previously created in `-f2`;
             -f5, --folder-enumerate     Runs the filesystem program - enumerates folder for its filesystem entries;
-            
+            -f6, --folder-watcher       Runs the filesystem program - watches a test folder for changes;
+
             -h,  --help                 Runs the banner module;
             
             -p,  --get-processes        Runs the process program - enumerates running processes on the hosted platform;
