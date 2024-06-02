@@ -1,4 +1,5 @@
-﻿using MyModules.Command;
+﻿using MyModules.Async;
+using MyModules.Command;
 using MyModules.Filesystem.Enumeration;
 using MyModules.Filesystem.Discovery;
 using MyModules.Strings;
@@ -16,7 +17,7 @@ class Program
     /// Main Entrypoint
     /// </summary>
     /// <param name="args">stdin arguments</param>
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         if (args.Length != 1)
         {
@@ -26,6 +27,13 @@ class Program
 
         switch (args[0])
         {
+            //--------------------------------------------------
+            // Async Module - Learning Async
+            //--------------------------------------------------
+            case "-a":
+            case "--async":
+                await new AsyncCounters().Run();
+                break;
             //--------------------------------------------------
             // Command Module - Learning Process Spawning When
             //--------------------------------------------------
