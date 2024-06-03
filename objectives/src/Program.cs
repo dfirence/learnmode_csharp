@@ -1,4 +1,5 @@
-﻿using MyModules.Command;
+﻿using MyModules.Async;
+using MyModules.Command;
 using MyModules.Filesystem.Enumeration;
 using MyModules.Filesystem.Discovery;
 using MyModules.Strings;
@@ -16,7 +17,7 @@ class Program
     /// Main Entrypoint
     /// </summary>
     /// <param name="args">stdin arguments</param>
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         if (args.Length != 1)
         {
@@ -26,6 +27,13 @@ class Program
 
         switch (args[0])
         {
+            //--------------------------------------------------
+            // Async Module - Learning Async
+            //--------------------------------------------------
+            case "-a":
+            case "--async":
+                await new AsyncCounters().Run();
+                break;
             //--------------------------------------------------
             // Command Module - Learning Process Spawning When
             //--------------------------------------------------
@@ -67,6 +75,11 @@ class Program
             case "-f5":
             case "--folder-enumerate":
                 new FileProfile().EnumerateFolder();
+                break;
+
+            case "-f6":
+            case "--folder-watcher":
+                new FileWatch().Run();
                 break;
             //--------------------------------------------------
             // Strings Module - Learning String Manipulation
@@ -141,7 +154,8 @@ class Program
             -f3, --file-delete          Runs the filesystem program - deletes file previously created in `-f2` option;
             -f4, --folder-delete        Runs the filesystem program - deletes folder previously created in `-f2`;
             -f5, --folder-enumerate     Runs the filesystem program - enumerates folder for its filesystem entries;
-            
+            -f6, --folder-watcher       Runs the filesystem program - watches a test folder for changes;
+
             -h,  --help                 Runs the banner module;
             
             -p,  --get-processes        Runs the process program - enumerates running processes on the hosted platform;
