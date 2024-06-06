@@ -11,101 +11,112 @@ namespace Watcher.Modules.Windows;
 public class EtwEventProcessStart
 {
     public string? EventName { get; init; }
-
     public string? TimeGenerated { get; set; }
-
     public string? TimeProcessCreated { get; set; }
-
     public string? Parent { get; set; }
-
     public string? Process { get; set; }
-
     public string? CommandLine { get; set; }
+    public int? ParentId { get; set; }
+    public int? ProcessId { get; set; }
 
-    public int? ppid { get; set; }
-
-    public int? pid { get; set; }
-
-    public EtwEventProcessStart() { EventName = this.GetType().Name; }
-
-    public EtwEventProcessStart(DateTime TimeProcessStart,
-                                string Parent,
-                                string Process,
-                                string CommandLine,
-                                int ParentId,
-                                int ProcessId)
+    public EtwEventProcessStart()
     {
-        if (string.IsNullOrEmpty(this.EventName))
-            this.EventName = GetType().Name;
-
-        UpdateEtwRecord(TimeProcessStart,
-                        Parent,
-                        Process,
-                        CommandLine,
-                        ParentId,
-                        ProcessId);
+        EventName = GetType().Name;
     }
 
-    public void UpdateEtwRecord(DateTime TimeProcessStart,
-                                string Parent,
-                                string Process,
-                                string CommandLine,
-                                int ParentId,
-                                int ProcessId)
+    public EtwEventProcessStart(DateTime timeProcessStart,
+                                string parent,
+                                string process,
+                                string commandLine,
+                                int parentId,
+                                int processId)
+    {
+        EventName = GetType().Name;
+
+        Update(timeProcessStart, parent, process,
+               commandLine, parentId, processId);
+    }
+
+    public void Update(DateTime timeProcessStart,
+                       string parent,
+                       string process,
+                       string commandLine,
+                       int parentId,
+                       int processId)
     {
         TimeGenerated = DateTime.UtcNow.ToString("o");
-
-        TimeProcessCreated = TimeProcessStart.ToUniversalTime()
-                                             .ToString("o");
-
-        this.Parent = Parent;
-        this.Process = Process;
-        this.CommandLine = CommandLine;
-        this.ppid = ParentId;
-        this.pid = ProcessId;
+        TimeProcessCreated = timeProcessStart.ToUniversalTime().ToString("o");
+        Parent = parent;
+        Process = process;
+        CommandLine = commandLine;
+        ParentId = parentId;
+        ProcessId = processId;
     }
 }
 
-
-/// <summary>
-/// Class <c>EtwSubscriber</c> serves an inheritable class
-/// where EtwSubscriptionSessions can be created and using
-/// specific Etw provider implementations.
-/// </summary>
-public abstract class EtwSubscriber
+public abstract class EtwSubscriber : IDisposable
 {
-    //--------------------------------------------------------------------------
-    // Public Fields
-    //--------------------------------------------------------------------------
     public string TraceSessionName { get; set; }
         = $"DefaultTraceSession-{DateTime.UtcNow.ToString("o")}";
 
     public bool HasAdminRights { get; } = Environment.IsPrivilegedProcess;
 
-    public JsonSerializerOptions opts = new(JsonSerializerDefaults.Web)
-    {
-        WriteIndented = true
-    };
+    public JsonSerializerOptions JsonOptions { get; }
+        = new(JsonSerializerDefaults.Web) { WriteIndented = true };
 
     public EtwEventProcessStart? MyEtwRecord { get; set; }
-    //--------------------------------------------------------------------------
-    // Public Methods
-    //--------------------------------------------------------------------------
+
+    private TraceEventSession? _session;
+
+    public void StartSession()
+    {
+        if (!HasAdminRights)
+        {
+            Console.WriteLine("Must run with elevated privileges.");
+            return;
+        }
+        var kw = KernelTraceEventParser.Keywords.Process;
+
+        _session = new TraceEventSession(TraceSessionName);
+        _session.EnableKernelProvider(kw);
+        _session.Source.Kernel.ProcessStart += OnProcessStart;
+        _session.Source.Kernel.ProcessStop += OnProcessStop;
+
+        Console.WriteLine("Listening for events... Press CTRL+C to exit.");
+
+        Console.CancelKeyPress += (sender, e) =>
+        {
+            e.Cancel = true;
+            StopSession();
+        };
+
+        _session.Source.Process();
+    }
+
+    public void StopSession()
+    {
+        _session?.Stop();
+        _session?.Dispose();
+        _session = null;
+        Console.WriteLine("ETW session stopped.");
+    }
+
+    public void Dispose()
+    {
+        StopSession();
+    }
+
     public string ToJson()
     {
-        return JsonSerializer.Serialize(this.MyEtwRecord, this.opts);
+        return JsonSerializer.Serialize(MyEtwRecord, JsonOptions);
     }
+
     public void ToStdoutJson()
     {
         Console.WriteLine(ToJson());
         Console.Out.Flush();
     }
-    /// <summary>
-    /// Covenient Method to get the ProcessName by PID, this is commonly useful
-    /// to get the name of the ParentProcess.
-    /// </summary>
-    /// <param name="pid"></param>
-    /// <returns>string</returns>
+
     public string TryGetProcessById(int pid)
     {
         try
@@ -114,111 +125,50 @@ public abstract class EtwSubscriber
         }
         catch (Exception error)
         {
-            Console.Error.WriteLine(
-                $@"{this.GetType().Name} : {error.Message}");
+            Console.Error.WriteLine($"{GetType().Name} : {error.Message}");
             return "null";
         }
     }
+
+    protected abstract void OnProcessStart(ProcessTraceData data);
+
+    protected abstract void OnProcessStop(ProcessTraceData data);
 }
 
-
-/// <summary>
-/// An EtwSubscriber WiredUp and inheriting From
-/// EtwSubscriber Abstract class.
-/// </summary>
 public partial class MySubscriberTest : EtwSubscriber
 {
-    //-----------------------------------------------------------------------
-    // Private Fields
-    //-----------------------------------------------------------------------
-
     public MySubscriberTest(string mySessionName = "")
     {
-        if (!HasAdminRights)
+        if (!string.IsNullOrEmpty(mySessionName))
         {
-            Console.WriteLine("Must Run With Elevated Privileges");
-            return;
-        }
-
-        if (!string.IsNullOrEmpty(mySessionName) &&
-            !string.IsNullOrWhiteSpace(mySessionName))
             TraceSessionName = mySessionName;
-
-        // Create a new CustomSchema Event for ProcessStart
-        MyEtwRecord = new EtwEventProcessStart();
-
-        // TraceSession Resource - Needs Dispose()
-        using (var session = new TraceEventSession(TraceSessionName))
-        {
-            Console.WriteLine(
-                "Listening for process start events... Press CTRL+C to exit.");
-
-            // Registrer Early Exit through CTRL+C
-            Console.CancelKeyPress +=
-            delegate (object? sender, ConsoleCancelEventArgs _)
-            {
-                session.Dispose();
-                Console.Error.WriteLine(
-                    $"CTRL+C Signal - ActiveSession {session.IsActive}");
-            };
-
-            // EtwKeywords For KernelTraceEvents
-            var kw = KernelTraceEventParser.Keywords.Process;
-            // Enable KernelTraceEvents For Provider
-            session.EnableKernelProvider(kw);
-            // Register Callbacks
-            session.Source.Kernel.ProcessStart += CbOnProcessStart;
-            // session.Source.Kernel.ProcessStop += cbOnProcessStop;
-
-            session.Source.Process();       // Start Etw Session
-            session.Stop();                 // Stop Etw Session
-            session.Dispose();              // Release Etw Session Resource
         }
+
+        MyEtwRecord = new EtwEventProcessStart();
     }
-    //-----------------------------------------------------------------------
-    // Public Methods
-    //-----------------------------------------------------------------------
 
-
-    /// <summary>
-    /// CallBack <c>OnProcessStart</c> handles the process creation event
-    /// </summary>
-    /// <param name="data">ProcessTraceData Struct</param>
-    public void CbOnProcessStart(ProcessTraceData data)
+    protected override void OnProcessStart(ProcessTraceData data)
     {
-        MyEtwRecord?.UpdateEtwRecord(data.TimeStamp,
-                                     TryGetProcessById(data.ParentID),
-                                     data.ImageFileName,
-                                     MyRegex().Replace(data.CommandLine, " "),
-                                     data.ParentID,
-                                     data.ProcessID);
-        this.ToStdoutJson();
+        MyEtwRecord?.Update(data.TimeStamp,
+                            TryGetProcessById(data.ParentID),
+                            data.ImageFileName,
+                            MyRegex().Replace(data.CommandLine, ""),
+                            data.ParentID,
+                            data.ProcessID);
+        ToStdoutJson();
     }
 
-
-    /// <summary>
-    /// Callback <c>OnProcessStop</c> hanldes the process terminate event
-    /// </summary>
-    /// <param name="data">ProcessTraceDataStruct</param>
-    public void cbOnProcessStop(ProcessTraceData data)
+    protected override void OnProcessStop(ProcessTraceData data)
     {
-        Console.WriteLine(
-            $@"
-            Process Stop:
-                etwTask             : {data.Task}
-                etwTaskName         : {data.TaskName}
-                PID                 : {data.ProcessID}
-                Image Name          : {data.ImageFileName}
-                Process ExitTime    : {data.TimeStamp.ToString("o")}
-            "
-        );
+        Console.WriteLine($@"
+                Process Stop:
+                    etwTask             : {data.Task}
+                    etwTaskName         : {data.TaskName}
+                    PID                 : {data.ProcessID}
+                    Image Name          : {data.ImageFileName}
+                    Process ExitTime    : {data.TimeStamp.ToString("o")}
+            ");
     }
-
-
-    //-----------------------------------------------------------------------
-    // Private Methods
-    //-----------------------------------------------------------------------
-
 
     [System.Text.RegularExpressions.GeneratedRegex(@"\s+")]
     private static partial System.Text.RegularExpressions.Regex MyRegex();
