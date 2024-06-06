@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using Common;
 
+// https://medium.com/justeattakeaway-tech/json-serialization-libraries-performance-tests-b54cbb3cccbb
 
 namespace MyModules.Parsing.Json;
 
@@ -12,6 +13,8 @@ public class Fruit
     public DateTime? date { get; set; }
     public string? name { get; set; }
     public string? fruitType { get; set; }
+    public string? flavor { get; set; }
+    public string? provider { get; set; }
 }
 
 public class ParserJson : MyAbstractClass
@@ -54,24 +57,26 @@ public class ParserJson : MyAbstractClass
         {
             date = DateTime.UtcNow,
             name = "Kiwi",
-            fruitType = "Tropical"
+            fruitType = "Tropical",
+            flavor = "Sweet/Sour",
+            provider = "TraderJoes"
         };
     }
     public void LargeTest()
     {
-        const int MAX_CYCLES = 1_000_000;
-        string[] items = new string[MAX_CYCLES];
-        // Fruit[] items = new Fruit[MAX_CYCLES];
+        const int MAX_CYCLES = 5_000_000;
+        // string[] items = new string[MAX_CYCLES];
+        Fruit[] items = new Fruit[MAX_CYCLES];
 
         Stopwatch sw = new Stopwatch();
         sw.Start();
         for (var i = 0; i < MAX_CYCLES; i++)
         {
-            //Fruit f = GetNewFruit();
-            string f = JsonSerializer.Serialize(GetNewFruit());
+            Fruit f = GetNewFruit();
+            //string f = JsonSerializer.Serialize(GetNewFruit());
             items[i] = f;
         }
-        // string json = JsonSerializer.Serialize(items);
+        string json = JsonSerializer.Serialize(items);
         sw.Stop();
         TimeSpan ts = sw.Elapsed;
 
