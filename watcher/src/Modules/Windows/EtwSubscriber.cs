@@ -186,16 +186,12 @@ public partial class MySubscriberTest : EtwSubscriber
     /// <param name="data">ProcessTraceData Struct</param>
     public void CbOnProcessStart(ProcessTraceData data)
     {
-        string CommandLine = MyRegex().Replace(data.CommandLine, " ");
-
-        MyEtwRecord?.UpdateEtwRecord(
-            data.TimeStamp,
-            TryGetProcessById(data.ParentID),
-            data.ImageFileName,
-            CommandLine,
-            data.ParentID,
-            data.ProcessID);
-
+        MyEtwRecord?.UpdateEtwRecord(data.TimeStamp,
+                                     TryGetProcessById(data.ParentID),
+                                     data.ImageFileName,
+                                     MyRegex().Replace(data.CommandLine, " "),
+                                     data.ParentID,
+                                     data.ProcessID);
         this.ToStdoutJson();
     }
 
