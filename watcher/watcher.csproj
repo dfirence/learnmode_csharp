@@ -11,6 +11,11 @@
     <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="3.1.10" />
     <PackageReference Include="System.Diagnostics.EventLog" Version="8.0.0" />
     <PackageReference Include="System.Diagnostics.Tracing" Version="4.3.0" />
+    <PackageReference Include="YamlDotNet" Version="15.1.6" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- extends watching group to include *.yaml files -->
+    <Watch Include="**\*.yaml"/>
+  </ItemGroup>
 </Project>
