@@ -1,0 +1,20 @@
+[{
+    "eventName": "EtwEventProcessStart",
+    "timeGenerated": "2024-06-06T00:02:55.7787294Z",
+    "timeProcessCreated": "2024-06-06T00:02:55.2466713Z",
+    "parent": "cmd",
+    "process": "ipconfig.exe",
+    "commandLine": "ipconfig",
+    "ppid": 10100,
+    "pid": 1716
+  },
+  {
+    "eventName": "EtwEventProcessStart",
+    "timeGenerated": "2024-06-06T00:06:19.2149578Z",
+    "timeProcessCreated": "2024-06-06T00:06:18.4074092Z",
+    "parent": "svchost",
+    "process": "WmiPrvSE.exe",
+    "commandLine": "C:\\Windows\\system32\\wbem\\wmiprvse.exe -Embedding",
+    "ppid": 860,
+    "pid": 1560
+  }]
