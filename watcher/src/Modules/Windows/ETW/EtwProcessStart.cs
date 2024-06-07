@@ -71,6 +71,7 @@ public class SubscriberProcessStart : ETWSubscriber
         try
         {
             using var process = Process.GetProcessById(processId);
+            // (process.MachineName, process.MainModule.FileName, process.SessionId)
             return process.ProcessName;
         }
         catch (Exception)
