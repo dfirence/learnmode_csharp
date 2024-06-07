@@ -11,6 +11,7 @@ namespace Watcher.Modules.Schema
     /// </summary>
     public class EtwEvent
     {
+        public required int? EventId { get; set; }
         public required string? EventCategory { get; set; }
         public bool? IsEnabled { get; set; }
         public List<Field>? Fields { get; set; }
@@ -57,7 +58,7 @@ namespace Watcher.Modules.Schema
     /// Handles schema operations including loading, dynamic object creation,
     /// and serialization.
     /// </summary>
-    public class SchemaHandler
+    public partial class SchemaHandler
     {
         private JsonSerializerOptions JsonOptions { get; }
             = new JsonSerializerOptions
@@ -140,7 +141,7 @@ namespace Watcher.Modules.Schema
         /// </summary>
         /// <param name="type">The type as a string.</param>
         /// <returns>The default value for the type.</returns>
-        private static object? TryGetDefaultValue(string type)
+        public static object? TryGetDefaultValue(string type)
         {
             return type.ToLower() switch
             {
@@ -223,7 +224,10 @@ namespace Watcher.Modules.Schema
         {
             try
             {
-                return JsonSerializer.Serialize(dynamicObject, JsonOptions);
+                string json = JsonSerializer.Serialize(
+                    dynamicObject, JsonOptions);
+                return json;
+                //return MyRegex().Replace(json, " ");
             }
             catch (Exception ex)
             {
@@ -233,5 +237,7 @@ namespace Watcher.Modules.Schema
                 return string.Empty;
             }
         }
+        [System.Text.RegularExpressions.GeneratedRegex(@"\s+")]
+        public static partial System.Text.RegularExpressions.Regex MyRegex();
     }
 }
