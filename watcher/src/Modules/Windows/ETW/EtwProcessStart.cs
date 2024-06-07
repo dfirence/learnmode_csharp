@@ -14,7 +14,6 @@ public class SubscriberProcessStart : ETWSubscriber
 
     public override void Start()
     {
-        //SubscribeToEvent<ProcessTraceData>(ProcessEvent);
         Session.EnableKernelProvider(KernelTraceEventParser.Keywords.Process);
         Session.Source.Kernel.ProcessStart += data =>
         {
@@ -34,33 +33,27 @@ public class SubscriberProcessStart : ETWSubscriber
 
     public override void Stop()
     {
-        Session.Dispose();
+        Session.Source.StopProcessing();
         SessionStatus = ETWSessionStatus.Stopped;
         Console.WriteLine("Process Start subscriber stopped.");
     }
 
     public override void Dispose()
     {
-        Session.Dispose();
+        Stop();
         SessionStatus = ETWSessionStatus.Disposed;
     }
 
     private void ProcessEvent(ProcessTraceData data)
     {
-        // Create event object based on the defined schema
-        //dynamic eventObject = CreateEventObject(data);
         CreateEventObject(data);
         Console.WriteLine($"{SchemaHandler.ToJsonFromDict(SchemaEvent)}");
         Console.Out.Flush();
         // Add your custom event handling logic here
     }
 
-    private /*dynamic*/ void CreateEventObject(ProcessTraceData data)
+    private void CreateEventObject(ProcessTraceData data)
     {
-        // Create an event object based on the defined schema
-        //dynamic eventObject = new ExpandoObject();
-        //var dict = (IDictionary<string, object>)eventObject;
-
         // Retrieve details from ETW event and map them to the schema fields
         SchemaEvent["EventCategory"] = "etwProcessStart";
         SchemaEvent["TimeGenerated"] = DateTime.UtcNow.ToString("o");
@@ -71,8 +64,6 @@ public class SubscriberProcessStart : ETWSubscriber
         SchemaEvent["Process"] = data.ImageFileName;
         SchemaEvent["CommandLine"] = data.CommandLine;
         // Add additional fields according to the schema definition
-
-        //return eventObject;
     }
 
     private string GetProcessName(int processId)
