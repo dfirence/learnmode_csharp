@@ -219,5 +219,19 @@ namespace Watcher.Modules.Schema
                 return string.Empty;
             }
         }
+        public string ToJsonFromDict(IDictionary<string, object> dynamicObject)
+        {
+            try
+            {
+                return JsonSerializer.Serialize(dynamicObject, JsonOptions);
+            }
+            catch (Exception ex)
+            {
+                string? method = MethodBase.GetCurrentMethod()?.Name;
+                Console.Error.WriteLine(
+                    $"{method}|>Error serializing to JSON: {ex.Message}");
+                return string.Empty;
+            }
+        }
     }
 }
