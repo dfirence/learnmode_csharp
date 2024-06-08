@@ -1,8 +1,6 @@
 using System.Diagnostics;
-using System.Dynamic;
 using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
 using Microsoft.Diagnostics.Tracing.Parsers;
-using Microsoft.Diagnostics.Tracing.Analysis;
 using Microsoft.Diagnostics.Tracing;
 
 
@@ -22,7 +20,7 @@ public class SubscriberProcessStart : ETWSubscriber
         }
         //SubscribeToEvent<ProcessTraceData>(ProcessEvent);
         Session.EnableKernelProvider(KernelTraceEventParser.Keywords.Process);
-        Session.EnableProvider("Microsoft-Windows-Kernel-Process", TraceEventLevel.Verbose);
+        //Session.EnableProvider("Microsoft-Windows-Kernel-Process", //TraceEventLevel.Verbose);
 
         Session.Source.Kernel.ProcessStart += data =>
         {
@@ -95,6 +93,6 @@ public class SubscriberProcessStart : ETWSubscriber
         // Process
         SchemaEvent["pid"] = data.ProcessID;
         SchemaEvent["Process"] = data.ImageFileName;
-        SchemaEvent["CommandLine"] = data.CommandLine;
+        SchemaEvent["CommandLine"] = data.CommandLine.Replace(@"\u0022", "\"");
     }
 }
