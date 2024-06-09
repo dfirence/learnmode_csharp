@@ -6,6 +6,10 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace Watcher.Modules.Schema
 {
+    public class SchemaEvent : Dictionary<string, object>
+    {
+        // You can add any additional properties or methods as needed
+    }
     /// <summary>
     /// Represents an ETW Event with a category, enabled status, and fields.
     /// </summary>

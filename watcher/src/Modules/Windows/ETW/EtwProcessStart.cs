@@ -1,98 +1,124 @@
 using System.Diagnostics;
-using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
 using Microsoft.Diagnostics.Tracing.Parsers;
-using Microsoft.Diagnostics.Tracing;
+using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
+using Watcher.Modules.Schema;
 
-
-namespace Watcher.Modules.Windows.ETW;
-
-
-public class SubscriberProcessStart : ETWSubscriber
+namespace Watcher.Modules.Windows.ETW
 {
-    public SubscriberProcessStart(string sessionName, string schemaFilePath, string schemaEventName) : base(sessionName, schemaFilePath, schemaEventName)
-    { }
-
-    public override void Start()
+    /// <summary>
+    /// Subscriber for monitoring process start events using ETW (Event Tracing for Windows).
+    /// </summary>
+    public class SubscriberProcessStart : ETWSubscriber
     {
-        if (Session == null)
+        /// <summary>
+        /// Initializes a new instance of the SubscriberProcessStart class.
+        /// </summary>
+        /// <param name="sessionName">The name of the ETW session.</param>
+        /// <param name="schemaFilePath">The file path to the schema definition.</param>
+        /// <param name="schemaEventName">The name of the schema event.</param>
+        public SubscriberProcessStart(string sessionName, string schemaFilePath, string schemaEventName)
+            : base(sessionName, schemaFilePath, schemaEventName)
+        { }
+
+        /// <summary>
+        /// Starts the ETW session and begins processing process start events.
+        /// </summary>
+        public override void Start()
         {
-            return;
+            if (Session == null)
+            {
+                Console.Error.WriteLine("Session is not initialized.");
+                return;
+            }
+            Session.EnableKernelProvider(KernelTraceEventParser.Keywords.Process);
+
+            // Event handler for process start events
+            Session.Source.Kernel.ProcessStart += data =>
+            {
+                // Ignore system processes
+                if (data.ProcessID != 0 && data.ProcessID != 4)
+                    ProcessEvent(data);
+            };
+
+            // Stop the session and dispose when cancel key is pressed
+            Console.CancelKeyPress += (sender, e) =>
+            {
+                e.Cancel = true;
+                Stop();
+                Dispose();
+            };
+
+            // Start processing events
+            Session.Source.Process();
+            Console.WriteLine("Process Start subscriber started.");
         }
-        //SubscribeToEvent<ProcessTraceData>(ProcessEvent);
-        Session.EnableKernelProvider(KernelTraceEventParser.Keywords.Process);
-        //Session.EnableProvider("Microsoft-Windows-Kernel-Process", //TraceEventLevel.Verbose);
 
-        Session.Source.Kernel.ProcessStart += data =>
+        /// <summary>
+        /// Stops the ETW session and sets the session status to stopped.
+        /// </summary>
+        public override void Stop()
         {
-            // Ignore system processes
-            if (data.ProcessID != 0 && data.ProcessID != 4)
-                ProcessEvent(data);
-        };
-        Console.CancelKeyPress += (sender, e) =>
-        {
-            e.Cancel = true;
-            Stop();
-            Dispose();
-        };
-        Session.Source.Process(); // Start processing events
-        Console.WriteLine("Process Start subscriber started.");
-    }
-
-    public override void Stop()
-    {
-        Session?.Dispose();
-        SessionStatus = ETWSessionStatus.Stopped;
-        Console.WriteLine("Process Start subscriber stopped.");
-    }
-
-    public override void Dispose()
-    {
-        Session?.Dispose();
-        SessionStatus = ETWSessionStatus.Disposed;
-    }
-
-    private void ProcessEvent(ProcessTraceData data)
-    {
-        // Create event object based on the defined schema
-        CreateEventObject(data);
-        Console.WriteLine($"{SchemaHandler.ToJsonFromDict(SchemaEvent)}");
-        Console.Out.Flush();
-        // Add your custom event handling logic here
-        // Reset EventObject
-        SchemaEvent.Keys.ToList().ForEach(k => SchemaEvent[k] = null);
-    }
-
-    private void CreateEventObject(ProcessTraceData data)
-    {
-        // Parent
-        SchemaEvent["ppid"] = data.ParentID;
-        try
-        {
-            using var parentMetadata = Process.GetProcessById(data.ParentID);
-            SchemaEvent["Parent"]
-                = parentMetadata?.MainModule?.FileName?.Split("\\").Last()
-                    ?? "unknown";
-            SchemaEvent["ParentPath"]
-                = parentMetadata?.MainModule?.FileName ?? "";
+            Session?.Dispose();
+            SessionStatus = ETWSessionStatus.Stopped;
+            Console.WriteLine("Process Start subscriber stopped.");
         }
-        catch (Exception ex)
+
+        /// <summary>
+        /// Disposes the ETW session and suppresses finalization.
+        /// </summary>
+        public override void Dispose()
         {
-            Console.Error.WriteLine($"Parent: {data.ParentID} " + ex.Message);
+            Session?.Dispose();
+            SessionStatus = ETWSessionStatus.Disposed;
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Processes a process start event.
+        /// </summary>
+        /// <param name="data">The process start event data.</param>
+        private void ProcessEvent(ProcessTraceData data)
+        {
+            CreateEventObject(data);
+            Console.WriteLine($"{SchemaHandler.ToJsonFromDict(SchemaEvent)}");
             Console.Out.Flush();
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            SchemaEvent.Keys.ToList().ForEach(k => SchemaEvent[k] = null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
-        // EventDecoration
-        SchemaEvent["EventCategory"] = "etwProcessStart";
-        SchemaEvent["EventName"] = data.EventName;
-        SchemaEvent["Device"] = Environment.MachineName.ToLower();
-        // Timestamps
-        SchemaEvent["TimeGenerated"] = DateTime.UtcNow.ToString("o");
-        SchemaEvent["TimeProcessCreated"]
-            = data.TimeStamp.ToUniversalTime().ToString("o");
+        /// <summary>
+        /// Creates an event object from the process start event data.
+        /// </summary>
+        /// <param name="data">The process start event data.</param>
+        private void CreateEventObject(ProcessTraceData data)
+        {
+            // Parent process metadata
+            SchemaEvent["ppid"] = data.ParentID;
+            try
+            {
+                using var parentMetadata = Process.GetProcessById(data.ParentID);
+                SchemaEvent["Parent"] = parentMetadata?.MainModule?.FileName?.Split("\\").Last() ?? "unknown";
+                SchemaEvent["ParentPath"] = parentMetadata?.MainModule?.FileName ?? "";
+            }
+            catch (Exception ex)
+            {
+                SchemaEvent["Parent"] = $"unknown - {ex.Message}";
+            }
 
-        // Process
-        SchemaEvent["pid"] = data.ProcessID;
-        SchemaEvent["Process"] = data.ImageFileName;
-        SchemaEvent["CommandLine"] = data.CommandLine.Replace(@"\u0022", "\"");
+            // Event decoration
+            SchemaEvent["EventCategory"] = "etwProcessStart";
+            SchemaEvent["EventName"] = data.EventName;
+            SchemaEvent["Device"] = Environment.MachineName.ToLower();
+
+            // Timestamps
+            SchemaEvent["TimeGenerated"] = DateTime.UtcNow.ToString("o");
+            SchemaEvent["TimeProcessCreated"] = data.TimeStamp.ToUniversalTime().ToString("o");
+
+            // Process information
+            SchemaEvent["pid"] = data.ProcessID;
+            SchemaEvent["Process"] = data.ImageFileName;
+            SchemaEvent["CommandLine"] = data.CommandLine.Replace(@"\u0022", "\"");
+        }
     }
 }

@@ -13,7 +13,42 @@ namespace Watcher;
 
 class Program
 {
-    static void Main(string[] args)
+    private static protected string AUTHOR = "carlos_diaz|@dfirence";
+    private static protected string PROGRAM = "experiment etw_watcher";
+
+    public static void Main(string[] args)
+    {
+        if (args.Length == 0)
+            goto exitProcessWithHelp;
+
+        switch (args[0].Trim().ToLower())
+        {
+            case "-p":
+            case "--processes":
+                RunProcesses();
+                break;
+            default:
+                goto exitProcessWithHelp;
+        }
+    exitProcessWithHelp:
+        Banner();
+        return;
+    }
+    static void Banner()
+    {
+        string dashes = new('-', 64);
+        Console.Error.WriteLine(
+            $@"
+            {dashes}
+            {PROGRAM}
+            {AUTHOR}
+            {dashes}
+            usage:  watcher.exe [switch]
+            "
+        );
+    }
+
+    static void RunProcesses()
     {
         var testEvent = "etwProcessStart";
         var schemaPath = Path.Join(
@@ -40,5 +75,13 @@ class Program
             "MySession", schemaPath, testEvent);
         etw.Start();
     }
+    static void RunSchemaCheckFromFile(string confFilePath)
+    {
+        if (string.IsNullOrEmpty(confFilePath) ||
+            string.IsNullOrWhiteSpace(confFilePath))
+        {
+            Console.Error.WriteLine("Conf File Path cannot be null or empty");
+        }
+        string f = confFilePath.Trim();
+    }
 }
-
