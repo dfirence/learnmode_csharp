@@ -16,7 +16,9 @@ public class EtwEventsSubscriberProcess : ETWSubsriber
     public EtwEventsSubscriberProcess(string sessionName) : base(sessionName)
     {
         // Enable the Kernel provider to capture process events.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
         EtwSession.EnableKernelProvider(KernelTraceEventParser.Keywords.Process);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
         // Subscribe to ProcessStart events and handle them with OnDataProcessEvent method.
         EtwSession.Source.Kernel.ProcessStart += data =>

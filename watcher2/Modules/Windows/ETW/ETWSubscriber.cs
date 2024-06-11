@@ -88,7 +88,9 @@ public abstract class ETWSubsriber : IDisposable
         {
             if (recreate)
             {
+#pragma warning disable CS8604 // Possible null reference argument.
                 CreateNewEtwSession(EtwSessionName);
+#pragma warning restore CS8604 // Possible null reference argument.
             }
             else
             {
@@ -98,7 +100,9 @@ public abstract class ETWSubsriber : IDisposable
         }
         Console.Error.WriteLine($"{time}|EtwSession: {EtwSessionName} Started");
         _sessionState = EtwSessionStates.Started;
-        EtwSession.Source.Process();
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+        _ = EtwSession.Source.Process();
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         return true;
     }
 
@@ -123,11 +127,13 @@ public abstract class ETWSubsriber : IDisposable
     {
         try
         {
+#pragma warning disable CA1416 // Validate platform compatibility
             using (WindowsIdentity _id = WindowsIdentity.GetCurrent())
             {
                 WindowsPrincipal _idp = new(_id);
                 return _idp.IsInRole(WindowsBuiltInRole.Administrator);
             }
+#pragma warning restore CA1416 // Validate platform compatibility
         }
         catch (Exception ex)
         {
