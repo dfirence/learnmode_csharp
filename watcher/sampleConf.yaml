@@ -1,39 +1,44 @@
----
+commonFields: &commonFields
+  - name: TimeGenerated
+    type: string
+  - name: eventName
+    type: string
+
 schema:
-  name: Core
+  metadata:
+    id: "00001"
+    rv: "0.1"
+    description: ""
   events:
     - eventId: 1
-      eventCategory: etwProcessStart
+      eventCategory: etwProcess
+      isEnabled: true
       fields:
-        - name: EventName
-          type: string
-
         - name: TimeGenerated
           type: string
-
-        - name: TimeProcessCreated
+        - name: eventName
           type: string
-
+        - name: rguid
+          type: string
+        - name: pguid
+          type: string
+        - name: cguid
+          type: string
         - name: Device
           type: string
-
+        - name: TimeProcessCreated
+          type: string
         - name: ppid
           type: int
-
         - name: pid
           type: int
-
         - name: Parent
           type: string
-
         - name: Process
           type: string
-
         - name: CommandLine
           type: string
-
         - name: ParentPath
           type: string
-
         - name: ProcessPath
           type: string

@@ -77,7 +77,7 @@ namespace Watcher.Modules.Windows.ETW
         /// Processes a process start event.
         /// </summary>
         /// <param name="data">The process start event data.</param>
-        private void ProcessEvent(ProcessTraceData data)
+        /*private void ProcessEvent(ProcessTraceData data)
         {
             CreateEventObject(data);
             Console.WriteLine($"{SchemaHandler.ToJsonFromDict(SchemaEvent)}");
@@ -85,13 +85,13 @@ namespace Watcher.Modules.Windows.ETW
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             SchemaEvent.Keys.ToList().ForEach(k => SchemaEvent[k] = null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-        }
+        }*/
 
         /// <summary>
         /// Creates an event object from the process start event data.
         /// </summary>
         /// <param name="data">The process start event data.</param>
-        private void CreateEventObject(ProcessTraceData data)
+        private void ProcessEvent(ProcessTraceData data)
         {
             // Parent process metadata
             SchemaEvent["ppid"] = data.ParentID;
@@ -100,6 +100,7 @@ namespace Watcher.Modules.Windows.ETW
                 using var parentMetadata = Process.GetProcessById(data.ParentID);
                 SchemaEvent["Parent"] = parentMetadata?.MainModule?.FileName?.Split("\\").Last() ?? "unknown";
                 SchemaEvent["ParentPath"] = parentMetadata?.MainModule?.FileName ?? "";
+                using var processMetadata = Process.GetProcessById(data.ProcessID);
             }
             catch (Exception ex)
             {
@@ -119,6 +120,11 @@ namespace Watcher.Modules.Windows.ETW
             SchemaEvent["pid"] = data.ProcessID;
             SchemaEvent["Process"] = data.ImageFileName;
             SchemaEvent["CommandLine"] = data.CommandLine.Replace(@"\u0022", "\"");
+            //Console.WriteLine($"{SchemaHandler.ToJsonFromDict(SchemaEvent)}");
+            Console.Out.Flush();
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            SchemaEvent.Keys.ToList().ForEach(k => SchemaEvent[k] = null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
     }
 }

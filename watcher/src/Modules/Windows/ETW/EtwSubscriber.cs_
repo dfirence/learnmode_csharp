@@ -44,7 +44,7 @@ namespace Watcher.Modules.Windows.ETW
 
             SessionName = sessionName;
             Session = new TraceEventSession(SessionName);
-            SchemaHandler = new SchemaHandler();
+            SchemaHandler = new SchemaHandler(schemaFilePath);
             SchemaHandler.LoadSchema(schemaFilePath);
             var dynamicObjects = SchemaHandler.CreateDynamicObject();
             SchemaEvent = dynamicObjects[schemaEventName];

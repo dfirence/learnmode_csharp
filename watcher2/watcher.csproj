@@ -10,10 +10,6 @@
     <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <RuntimeIdentifier>$(OS);$(RuntimeIdentifier)</RuntimeIdentifier>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
     <DefineConstants>WINDOWS</DefineConstants>
   </PropertyGroup>
