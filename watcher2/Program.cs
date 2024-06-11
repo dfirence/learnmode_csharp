@@ -36,7 +36,7 @@ public class Program
             case "--etw-providers-list":
                 EtwProvidersList.GetProviders();
                 break;
-            case "--etw-process-monitoring":
+            case "--etw-monitor-processes":
                 RunEtw();
                 break;
             case "--evtx":
@@ -70,7 +70,7 @@ public class Program
         {DASHES}
         ETW
             --etw-providers-list
-            --etw-process-monitoring
+            --etw-monitor-processes
 
         {DASHES}
         EVTX::
