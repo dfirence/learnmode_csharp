@@ -9,6 +9,11 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <RuntimeIdentifier>$(OS);$(RuntimeIdentifier)</RuntimeIdentifier>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
     <DefineConstants>WINDOWS</DefineConstants>
   </PropertyGroup>
@@ -17,12 +22,12 @@
     <DefineConstants>LINUX</DefineConstants>
   </PropertyGroup>
 
-    <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
+  <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
     <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="3.1.11" />
   </ItemGroup>
   <ItemGroup>
-      <Compile Include="Program.cs" />
-      <!-- Add other source files here if needed -->
+    <Compile Include="Program.cs" />
+    <!-- Add other source files here if needed -->
   </ItemGroup>
 
   <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
