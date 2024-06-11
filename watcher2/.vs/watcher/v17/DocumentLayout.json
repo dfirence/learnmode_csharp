@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\my_code\\csharp\\watcher2\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{86886232-EE91-4B99-88A6-3783C6EDED6B}|watcher.csproj|c:\\my_code\\csharp\\watcher2\\modules\\windows\\etw\\etwproviderslist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{86886232-EE91-4B99-88A6-3783C6EDED6B}|watcher.csproj|solutionrelative:modules\\windows\\etw\\etwproviderslist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 1,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedHeight": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "EtwProvidersList.cs",
+              "DocumentMoniker": "C:\\my_code\\csharp\\watcher2\\Modules\\Windows\\ETW\\EtwProvidersList.cs",
+              "RelativeDocumentMoniker": "Modules\\Windows\\ETW\\EtwProvidersList.cs",
+              "ToolTip": "C:\\my_code\\csharp\\watcher2\\Modules\\Windows\\ETW\\EtwProvidersList.cs",
+              "RelativeToolTip": "Modules\\Windows\\ETW\\EtwProvidersList.cs",
+              "ViewState": "AQIAAA4AAAAAAAAAAAAQwBAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-11T13:16:10.83Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
