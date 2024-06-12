@@ -1,4 +1,7 @@
-﻿#if WINDOWS
+﻿using System;
+using System.Runtime.InteropServices;
+
+#if WINDOWS
 using Watcher.Modules.Windows.ETW;
 #endif
 
@@ -55,8 +58,7 @@ public static class Program
             HelpBanner();
             return;
         }
-
-        switch (args[0].Trim().ToLower())
+        switch(args[0].Trim().ToLower())
         {
             case "--get-processes":
                 ProcessDiscovery.GetProcesses();
@@ -103,10 +105,12 @@ public static class Program
             --help              Shows This Help Menu
 
             {Dashes}
-            General Purpose Functionality
+            Cross Platform      Available on Linux, MacOS, Windows
+
                 --get-processes
             {Dashes}
             ETW
+
                 --etw-providers-list
                 --etw-monitor-processes
 
@@ -120,6 +124,8 @@ public static class Program
     // Linux and macOS Code Path
     //--------------------------------------------------------------------------------
 #if LINUX || MACOS
+    private static UseUnixArgs()
+    {}
     /// <summary>
     /// Displays the help banner for the Linux or macOS version of the program.
     /// </summary>

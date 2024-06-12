@@ -1,9 +1,17 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\my_code\\csharp\\watcher2\\",
+  "WorkspaceRootPath": "C:\\my_code\\csharp\\learnmode_csharp\\watcher2\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{86886232-EE91-4B99-88A6-3783C6EDED6B}|watcher.csproj|c:\\my_code\\csharp\\watcher2\\modules\\windows\\etw\\etwproviderslist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{86886232-EE91-4B99-88A6-3783C6EDED6B}|watcher.csproj|c:\\my_code\\csharp\\learnmode_csharp\\watcher2\\modules\\common\\processdiscovery.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{86886232-EE91-4B99-88A6-3783C6EDED6B}|watcher.csproj|solutionrelative:modules\\common\\processdiscovery.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{86886232-EE91-4B99-88A6-3783C6EDED6B}|watcher.csproj|c:\\my_code\\csharp\\learnmode_csharp\\watcher2\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{86886232-EE91-4B99-88A6-3783C6EDED6B}|watcher.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{86886232-EE91-4B99-88A6-3783C6EDED6B}|watcher.csproj|c:\\my_code\\csharp\\learnmode_csharp\\watcher2\\modules\\windows\\etw\\etwproviderslist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{86886232-EE91-4B99-88A6-3783C6EDED6B}|watcher.csproj|solutionrelative:modules\\windows\\etw\\etwproviderslist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -19,15 +27,40 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "EtwProvidersList.cs",
-              "DocumentMoniker": "C:\\my_code\\csharp\\watcher2\\Modules\\Windows\\ETW\\EtwProvidersList.cs",
-              "RelativeDocumentMoniker": "Modules\\Windows\\ETW\\EtwProvidersList.cs",
-              "ToolTip": "C:\\my_code\\csharp\\watcher2\\Modules\\Windows\\ETW\\EtwProvidersList.cs",
-              "RelativeToolTip": "Modules\\Windows\\ETW\\EtwProvidersList.cs",
-              "ViewState": "AQIAAA4AAAAAAAAAAAAQwBAAAAAAAAAA",
+              "Title": "ProcessDiscovery.cs",
+              "DocumentMoniker": "C:\\my_code\\csharp\\learnmode_csharp\\watcher2\\Modules\\Common\\ProcessDiscovery.cs",
+              "RelativeDocumentMoniker": "Modules\\Common\\ProcessDiscovery.cs",
+              "ToolTip": "C:\\my_code\\csharp\\learnmode_csharp\\watcher2\\Modules\\Common\\ProcessDiscovery.cs",
+              "RelativeToolTip": "Modules\\Common\\ProcessDiscovery.cs",
+              "ViewState": "AQIAAAYAAAAAAAAAAAAAADMAAAAaAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-11T13:16:10.83Z",
+              "WhenOpened": "2024-06-12T13:57:47.545Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\my_code\\csharp\\learnmode_csharp\\watcher2\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\my_code\\csharp\\learnmode_csharp\\watcher2\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AQIAAE4AAAAAAAAAAAAmwGIAAAASAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T11:54:18.219Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "EtwProvidersList.cs",
+              "DocumentMoniker": "C:\\my_code\\csharp\\learnmode_csharp\\watcher2\\Modules\\Windows\\ETW\\EtwProvidersList.cs",
+              "RelativeDocumentMoniker": "Modules\\Windows\\ETW\\EtwProvidersList.cs",
+              "ToolTip": "C:\\my_code\\csharp\\learnmode_csharp\\watcher2\\Modules\\Windows\\ETW\\EtwProvidersList.cs",
+              "RelativeToolTip": "Modules\\Windows\\ETW\\EtwProvidersList.cs",
+              "ViewState": "AQIAACoAAAAAAAAAAAAowBQAAAAOAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-11T13:16:10.83Z"
             }
           ]
         }

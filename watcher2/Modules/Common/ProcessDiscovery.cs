@@ -16,7 +16,7 @@ public static class ProcessDiscovery
         try
         {
             StringBuilder sb = new StringBuilder();
-
+            sb.Append("\n\n");
             // Iterate through all running processes.
             foreach (var p in Process.GetProcesses())
             {
@@ -24,7 +24,7 @@ public static class ProcessDiscovery
                 using (p)
                 {
                     // Get process metadata (e.g., process path) if available.
-                    var path = GetProcessMetadata(in p) ?? string.Empty;
+                    var path = GetProcessMetadata(in p) ?? "";
 
                     // Append process details to the string builder.
                     sb.AppendFormat($"({p.Id, 6}) {p.ProcessName, -32} {path}\n");
