@@ -1,17 +1,14 @@
-﻿global using System;
-
-using Watcher.Modules.Common;
-
-#if WINDOWS
+﻿using Watcher.Modules.Common;
 using Watcher.Modules.Windows.ETW;
-#endif
 
 #if LINUX
 using Watcher.Modules.Linux;
 #endif
 
 
-public class Program
+namespace Watcher;
+
+public static class Program
 {
     private static string Author { get; } = "carlos_diaz|@dfirence";
     private static string Version { get; } = "0.0.1";
@@ -55,7 +52,7 @@ public class Program
     // Windows Code Path
     //--------------------------------------------------------------------------------
 #if WINDOWS
-    public static void RunEtw()
+    private static void RunEtw()
     {
         var esp = new EtwEventsSubscriberProcess("MyKernelSession");
         Thread etwThread = new Thread(() => esp.Start());
@@ -65,7 +62,7 @@ public class Program
     /// <summary>
     /// Windows Banner Showing Program Help
     /// </summary>
-    public static void HelpBanner()
+    private static void HelpBanner()
     {
         Console.WriteLine($@"
         {Header}
@@ -89,7 +86,7 @@ public class Program
     // Linux Code Path
     //--------------------------------------------------------------------------------
 #if LINUX
-    public static void HelpBanner()
+    private static void HelpBanner()
     {
 
     }
