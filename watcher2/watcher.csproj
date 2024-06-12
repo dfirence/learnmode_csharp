@@ -1,15 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- Specifies that this project will produce an executable -->
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <!-- Specifies the target framework for the project -->
     <TargetFramework>net8.0</TargetFramework>
+    <!-- Enables implicit usings for C# 10 -->
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Enables nullable reference types for C# 8 -->
     <Nullable>enable</Nullable>
+    <!-- Specifies whether to publish the application Ahead-of-Time (AOT) -->
     <PublishAot>true</PublishAot>
+    <!-- Disables default compilation items, allowing explicit control over included files -->
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <!-- Enables invariant globalizaiton for consistent behavior across different locales -->
     <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 
+  <!-- Conditionally defines compilation constants based on the OS -->
   <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
     <DefineConstants>WINDOWS</DefineConstants>
   </PropertyGroup>
@@ -20,24 +28,29 @@
     <DefineConstants>LINUX</DefineConstants>
   </PropertyGroup>
 
+  <!-- Adds package references and compilation items -->
   <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
+    <!-- Package reference for Windows only -->
     <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="3.1.11" />
   </ItemGroup>
   <ItemGroup>
+    <!-- Common source files included for all platforms -->
     <Compile Include="Program.cs" />
     <Compile Include="Modules\Common\**\*.cs" />
     <!-- Add other source files here if needed -->
   </ItemGroup>
 
+  <!-- Platform-specific source files -->
   <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
+    <!-- Windows-specific source files -->
     <Compile Include="Modules\Windows\**\*.cs" />
   </ItemGroup>
-
   <ItemGroup Condition="'$(IsMacOS)' == 'true'">
+    <!-- macOS-specific source files -->
     <Compile Include="Modules\Linux\**\*.cs" />
   </ItemGroup>
-
   <ItemGroup Condition="'$(OS)' != 'Windows_NT' AND '$(IsMacOS)' != 'true'">
+    <!-- Linux-specific source files -->
     <Compile Include="Modules\Linux\**\*.cs" />
   </ItemGroup>
 </Project>
