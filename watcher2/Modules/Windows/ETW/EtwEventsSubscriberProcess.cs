@@ -2,9 +2,7 @@
 using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
 using Microsoft.Diagnostics.Tracing.Parsers;
 
-
 namespace Watcher.Modules.Windows.ETW;
-
 
 /// <summary>
 /// EtwEventsSubscriberProcess class inherits from ETWSubsriber to handle specific ETW events.
@@ -35,10 +33,10 @@ public class EtwEventsSubscriberProcess : ETWSubsriber
     }
 
     // Method to format process event data into a JSON-like string.
-    public string OnDataProcessEvent(ProcessTraceData data)
+    private static string OnDataProcessEvent(ProcessTraceData data)
     {
-        string error = string.Empty;
-        string parent = string.Empty;
+        var error = string.Empty;
+        var parent = string.Empty;
         try
         {
             using var parentMeta = System.Diagnostics.Process.GetProcessById(data.ParentID);
@@ -48,35 +46,33 @@ public class EtwEventsSubscriberProcess : ETWSubsriber
         {
             error = ex.Message;
         }
-        //data.FormattedMessage
-        string json = $@"
-        timeProcessCreated : {data.TimeStamp.ToUniversalTime().ToString("o")}
-        etwEvent    : {data.EventName}
-        etwEventId  : {data.Task}
-        pguid       :
-        pcguid      :
-        ppid        : {data.ParentID}
-        pid         : {data.ProcessID}
-        parent      : {parent}
-        process     : {data.ImageFileName}
-        cmdline     : {data.CommandLine}
-        error       : {error}
-        ";
-        return json;
+        return $"""
+                
+                timeProcessCreated : {data.TimeStamp.ToUniversalTime():o}
+                etwEvent    : {data.EventName}
+                etwEventId  : {data.Task}
+                ppid        : {data.ParentID}
+                pid         : {data.ProcessID}
+                parent      : {parent}
+                process     : {data.ImageFileName}
+                cmdline     : {data.CommandLine}
+                error       : {error}
+                
+                """;
     }
-    public string OnDataProcessStop(ProcessTraceData data)
+    private static string OnDataProcessStop(ProcessTraceData data)
     {
-        //data.FormattedMessage
-        string json = $@"
-        etwEvent    : {data.EventName}
-        etwEventId : {data.Task}
-        timeProcessCreated : {data.TimeStamp.ToUniversalTime().ToString("o")}
-        ppid        : {data.ParentID}
-        pid         : {data.ProcessID}
-        process     : {data.ImageFileName}
-        cmdline     : {data.CommandLine}
-        ";
-        return json;
+        return $"""
+                
+                timeProcessTerminated : {data.TimeStamp.ToUniversalTime():o}
+                etwEvent    : {data.EventName}
+                etwEventId  : {data.Task}
+                ppid        : {data.ParentID}
+                pid         : {data.ProcessID}
+                process     : {data.ImageFileName}
+                cmdline     : {data.CommandLine}
+                
+                """;
     }
 }
 #endif
