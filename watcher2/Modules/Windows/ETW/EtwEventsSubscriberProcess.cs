@@ -7,7 +7,7 @@ namespace Watcher.Modules.Windows.ETW;
 /// <summary>
 /// EtwEventsSubscriberProcess class inherits from ETWSubsriber to handle specific ETW events.
 /// </summary>
-public class EtwEventsSubscriberProcess : ETWSubsriber
+public class EtwEventsSubscriberProcess : ETWSubscriber
 {
     // Constructor that initializes the ETW
     // session and subscribes to ProcessStart events.

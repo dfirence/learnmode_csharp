@@ -7,14 +7,14 @@ namespace Watcher.Modules.Windows.ETW;
 /// <summary>
 /// Abstract base class for ETW subscribers, implementing IDisposable for resource management.
 /// </summary>
-public abstract class ETWSubsriber : IDisposable
+public abstract class ETWSubscriber : IDisposable
 {
     //------------------------------------------------------------
     // Public Fields & Properties
     //------------------------------------------------------------
     public IDictionary<string, object>? EtwEventSchema { get; set; } // Schema for ETW events.
     protected TraceEventSession? EtwSession { get; set; } // ETW session instance.
-    protected string? EtwSessionName { get; set; } // Name of the ETW session.
+    private string? EtwSessionName { get; set; } // Name of the ETW session.
 
     // Enumeration to represent the states of the ETW session.
     protected enum EtwSessionStates
@@ -38,7 +38,7 @@ public abstract class ETWSubsriber : IDisposable
     // Constructors, Destructors, Deconstructors
     //------------------------------------------------------------
     // Constructor to initialize the ETW session with a session name.
-    public ETWSubsriber(string sessionName)
+    protected ETWSubscriber(string sessionName)
     {
         if (!HasAdminPrivileges())
         {
@@ -83,7 +83,7 @@ public abstract class ETWSubsriber : IDisposable
     // Method to start the ETW session.
     public bool Start(bool recreate = false)
     {
-        string time = GetUtcNowTimestamp();
+        var time = GetUtcNowTimestamp();
         if (EtwSession == null || _sessionState != EtwSessionStates.Created)
         {
             if (recreate)
@@ -100,6 +100,7 @@ public abstract class ETWSubsriber : IDisposable
         }
         Console.Error.WriteLine($"{time}|EtwSession: {EtwSessionName} Started");
         _sessionState = EtwSessionStates.Started;
+        
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
         _ = EtwSession.Source.Process();
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
@@ -164,17 +165,15 @@ public abstract class ETWSubsriber : IDisposable
     // Protected implementation of Dispose pattern.
     protected virtual void Dispose(bool disposing)
     {
-        if (!_disposed)
+        if (_disposed) return;
+        if (disposing)
         {
-            if (disposing)
-            {
-                // Dispose managed resources.
-                Stop();
-                EtwSession?.Dispose();
-            }
-            // Dispose unmanaged resources if any.
-            _disposed = true;
+            // Dispose managed resources.
+            Stop();
+            EtwSession?.Dispose();
         }
+        // Dispose unmanaged resources if any.
+        _disposed = true;
     }
 }
 #endif

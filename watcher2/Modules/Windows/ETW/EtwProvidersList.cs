@@ -25,39 +25,38 @@ public static class EtwProvidersList
     /// </summary>
     public static void GetProviders()
     {
-        string providers = string.Empty;
-        var providerGuids = TraceEventProviders.GetPublishedProviders(); // IEnumerable<Guid>
-        var etwDB = new EtwProviderDatabase((ushort)providerGuids.Count());
-        int processedCount = 0;
+        var providerGuids = TraceEventProviders.GetPublishedProviders().ToList(); // IEnumerable<Guid>
+        var sizeGuidList = (ushort)providerGuids.Count;
+        var etwDb = new EtwProviderDatabase((sizeGuidList));
+        var processedCount = 0;
 
         // Loop through each provider GUID
-        foreach (var _guid in providerGuids)
+        foreach (var guid in providerGuids)
         {
-            string _providerName = TraceEventProviders.GetProviderName(_guid);
-            string _providerGuid = _guid.ToString();
+            var providerName = TraceEventProviders.GetProviderName(guid);
+            var providerGuid = guid.ToString();
 
             // Get the keywords for the provider
-            List<ProviderDataItem> _keyWords = TraceEventProviders.GetProviderKeywords(_guid);
-            var _provider = new EtwProvider(_providerName, _providerGuid, (ushort)_keyWords.Count);
+            List<ProviderDataItem> keyWords = TraceEventProviders.GetProviderKeywords(guid);
+            var sizeKeywordList = (ushort)keyWords.Count;
+            var provider = new EtwProvider(providerName, providerGuid, sizeKeywordList);
 
             // Add keywords to the provider
-            foreach (var _keyWord in _keyWords)
+            foreach (var keyWord in keyWords)
             {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-                _provider.EtwKeyWords.Add(new EtwKeyword { Name = _keyWord.Name, Value = _keyWord.Value });
+                provider.EtwKeyWords.Add(new EtwKeyword { Name = keyWord.Name, Value = keyWord.Value });
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
             }
-            _provider.EtwProviderName = _providerName;
-            _provider.EtwProviderGuid = _providerGuid;
-            etwDB.EtwProviders.Add(_provider);
 
-            // Update and print the progress
+            // Update etwDb and print the progress
+            etwDb.EtwProviders.Add(provider);
             processedCount++;
-            Console.Write($"\rProcessing >>> {processedCount,7} of {etwDB.EtwProviders.Capacity} ETW Native Providers");
+            Console.Write($"\rProcessing >>> {processedCount,7} of {etwDb.EtwProviders.Capacity} ETW Native Providers");
         }
 
-        etwDB.UpdateRecordCount();
-        ToJsonFile(etwDB);
+        etwDb.UpdateRecordCount();
+        ToJsonFile(etwDb);
     }
 
     /// <summary>
@@ -65,7 +64,7 @@ public static class EtwProvidersList
     /// </summary>
     /// <param name="db">The ETW provider database object.</param>
     /// <returns>JSON string representation of the database.</returns>
-    public static string? ToJson(EtwProviderDatabase db)
+    private static string? ToJson(EtwProviderDatabase db)
     {
         try
         {
@@ -88,19 +87,15 @@ public static class EtwProvidersList
     /// </summary>
     /// <param name="db">The ETW provider database object.</param>
     /// <returns>True if the file was successfully created; otherwise, false.</returns>
-    public static bool ToJsonFile(EtwProviderDatabase db)
+    private static bool ToJsonFile(EtwProviderDatabase db)
     {
-        bool status = false;
-        string cwd = Path.Combine(Environment.CurrentDirectory, db.EtwProviderDatabaseName) + ".json";
+        var status = false;
+        var cwd = Path.Combine(Environment.CurrentDirectory, db.EtwProviderDatabaseName) + ".json";
         try
         {
-            var json = ToJson(db);
-            if (json != null)
-            {
-                File.WriteAllText(cwd, json);
-                status = true;
-                Console.WriteLine($"\n\n[success] FileCreated: {cwd}");
-            }
+            File.WriteAllText(cwd, ToJson(db));
+            status = true;
+            Console.WriteLine($"\n\n[success] FileCreated: {cwd}");
         }
         catch (Exception ex)
         {
@@ -123,7 +118,7 @@ public class EtwProviderDatabase
     /// Initializes a new instance of the EtwProviderDatabase class.
     /// </summary>
     /// <param name="initialListSize">Initial size of the providers list.</param>
-    public EtwProviderDatabase(ushort initialListSize = ushort.MaxValue)
+    public EtwProviderDatabase(ushort initialListSize = 1200)
     {
         EtwProviderDatabaseName = $"{Environment.MachineName.ToLower()}-etw-providers-database";
         EtwProviders = new List<EtwProvider>(initialListSize);
@@ -145,20 +140,21 @@ public class EtwProvider
 {
     public string? EtwProviderName { get; set; }
     public string? EtwProviderGuid { get; set; }
+    
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<EtwKeyword>? EtwKeyWords { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the EtwProvider class.
     /// </summary>
-    /// <param name="_name">Name of the provider.</param>
-    /// <param name="_guid">GUID of the provider.</param>
-    /// <param name="_keywordsSize">Initial size of the keywords list.</param>
-    public EtwProvider(string _name, string _guid, ushort _keywordsSize = 64)
+    /// <param name="name">Name of the provider.</param>
+    /// <param name="guid">GUID of the provider.</param>
+    /// <param name="keywordsSize">Initial size of the keywords list.</param>
+    public EtwProvider(string name, string guid, ushort keywordsSize = 64)
     {
-        EtwProviderName = _name;
-        EtwProviderGuid = _guid;
-        EtwKeyWords = new List<EtwKeyword>(_keywordsSize);
+        EtwProviderName = name;
+        EtwProviderGuid = guid;
+        EtwKeyWords = new List<EtwKeyword>(keywordsSize);
     }
 }
 
