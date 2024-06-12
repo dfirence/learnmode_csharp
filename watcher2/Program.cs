@@ -1,10 +1,12 @@
 ﻿using Watcher.Modules.Common;
-using Watcher.Modules.Windows.ETW;
 
-#if LINUX
-using Watcher.Modules.Linux;
+#if WINDOWS
+using Watcher.Modules.Windows.ETW;
 #endif
 
+#if LINUX || MACOS
+using Watcher.Modules.Linux;
+#endif
 
 namespace Watcher;
 
@@ -35,6 +37,7 @@ public static class Program
             case "--get-processes":
                 ProcessDiscovery.GetProcesses();
                 break;
+#if WINDOWS
             case "--etw-providers-list":
                 EtwProvidersList.GetProviders();
                 break;
@@ -43,6 +46,7 @@ public static class Program
                 break;
             case "--evtx":
                 break;
+#endif
             default:
                 HelpBanner();
                 break;
@@ -85,10 +89,11 @@ public static class Program
     //--------------------------------------------------------------------------------
     // Linux Code Path
     //--------------------------------------------------------------------------------
-#if LINUX
+
+#if LINUX || MACOS
     private static void HelpBanner()
     {
-
+        Greet.HelloWorld();
     }
 #endif
 }

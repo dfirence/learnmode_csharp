@@ -13,8 +13,10 @@
   <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
     <DefineConstants>WINDOWS</DefineConstants>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
+  <PropertyGroup Condition="'$(IsMacOS)' == 'true'">
+    <DefineConstants>MACOS</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(OS)' != 'Windows_NT' AND '$(IsMacOS)' != 'true'">
     <DefineConstants>LINUX</DefineConstants>
   </PropertyGroup>
 
@@ -23,7 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
-    <Compile Include="Modules\Common\**\*.cs"/>
+    <Compile Include="Modules\Common\**\*.cs" />
     <!-- Add other source files here if needed -->
   </ItemGroup>
 
@@ -31,7 +33,11 @@
     <Compile Include="Modules\Windows\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(OS)' != 'Windows_NT'">
+  <ItemGroup Condition="'$(IsMacOS)' == 'true'">
+    <Compile Include="Modules\Linux\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(OS)' != 'Windows_NT' AND '$(IsMacOS)' != 'true'">
     <Compile Include="Modules\Linux\**\*.cs" />
   </ItemGroup>
 </Project>
