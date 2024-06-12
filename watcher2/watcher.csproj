@@ -28,29 +28,31 @@
     <DefineConstants>LINUX</DefineConstants>
   </PropertyGroup>
 
-  <!-- Adds package references and compilation items -->
+  <!-- Package reference for Windows only -->
   <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
-    <!-- Package reference for Windows only -->
     <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="3.1.11" />
+    <PackageReference Include="Spectre.Console" Version="0.49.1" />
   </ItemGroup>
+	
+  <!-- Common source files included for all platforms -->
   <ItemGroup>
-    <!-- Common source files included for all platforms -->
     <Compile Include="Program.cs" />
     <Compile Include="Modules\Common\**\*.cs" />
     <!-- Add other source files here if needed -->
   </ItemGroup>
 
-  <!-- Platform-specific source files -->
+  <!-- Windows-specific source files -->
   <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
-    <!-- Windows-specific source files -->
     <Compile Include="Modules\Windows\**\*.cs" />
   </ItemGroup>
+	
+  <!-- macOS-specific source files -->
   <ItemGroup Condition="'$(IsMacOS)' == 'true'">
-    <!-- macOS-specific source files -->
     <Compile Include="Modules\Linux\**\*.cs" />
   </ItemGroup>
+  
+  <!-- Linux-specific source files -->
   <ItemGroup Condition="'$(OS)' != 'Windows_NT' AND '$(IsMacOS)' != 'true'">
-    <!-- Linux-specific source files -->
     <Compile Include="Modules\Linux\**\*.cs" />
   </ItemGroup>
 </Project>

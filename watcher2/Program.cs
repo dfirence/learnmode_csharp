@@ -1,7 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-
-#if WINDOWS
+﻿#if WINDOWS
 using Watcher.Modules.Windows.ETW;
 #endif
 
@@ -39,13 +36,15 @@ public static class Program
     /// <summary>
     /// Header displayed in the help banner.
     /// </summary>
-    private static string Header { get; } = $@"
+    private static string Header { get; }
+        = $"""
         {Dashes}
             {Author}
             {ProgramName}
             {Version}
         {Dashes}
-        Usage:  watcher.exe [switch]";
+        Usage:  watcher.exe [switch]
+        """;
 
     /// <summary>
     /// Main entry point of the application.
@@ -99,24 +98,22 @@ public static class Program
     /// </summary>
     private static void HelpBanner()
     {
-        Console.WriteLine($@"
+        Console.WriteLine($"""
             {Header}
 
             --help              Shows This Help Menu
 
-            {Dashes}
             Cross Platform      Available on Linux, MacOS, Windows
 
                 --get-processes
-            {Dashes}
+
             ETW
 
                 --etw-providers-list
                 --etw-monitor-processes
 
-            {Dashes}
             EVTX::
-            ");
+            """);
     }
 #endif
 
