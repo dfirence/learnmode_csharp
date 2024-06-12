@@ -23,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
+    <Compile Include="Modules\Common\**\*.cs"/>
     <!-- Add other source files here if needed -->
   </ItemGroup>
 

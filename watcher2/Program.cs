@@ -1,5 +1,6 @@
 ﻿global using System;
 
+using Watcher.Modules.Common;
 
 #if WINDOWS
 using Watcher.Modules.Windows.ETW;
@@ -9,19 +10,20 @@ using Watcher.Modules.Windows.ETW;
 using Watcher.Modules.Linux;
 #endif
 
+
 public class Program
 {
-    private static string AUTHOR {get;} = "carlos_diaz|@dfirence";
-    private static string VERSION {get;} = "0.0.1";
-    private static string PROGRAM_NAME {get;} = "Watcher";
-    private static string DASHES {get;} = new string('-', 64);
-    private static string HEADER { get; }
+    private static string Author { get; } = "carlos_diaz|@dfirence";
+    private static string Version { get; } = "0.0.1";
+    private static string ProgramName { get; } = "Watcher";
+    private static string Dashes { get; } = new string('-', 64);
+    private static string Header { get; }
         = $@"
-        {DASHES}
-            {AUTHOR}
-            {PROGRAM_NAME}
-            {VERSION}
-        {DASHES}
+        {Dashes}
+            {Author}
+            {ProgramName}
+            {Version}
+        {Dashes}
         Usage:  watcher.exe [switch]";
 
     public static void Main(string[] args)
@@ -33,6 +35,9 @@ public class Program
         }
         switch (args[0].Trim().ToLower())
         {
+            case "--get-processes":
+                ProcessDiscovery.GetProcesses();
+                break;
             case "--etw-providers-list":
                 EtwProvidersList.GetProviders();
                 break;
@@ -63,16 +68,19 @@ public class Program
     public static void HelpBanner()
     {
         Console.WriteLine($@"
-        {HEADER}
+        {Header}
  
         --help              Shows This Help Menu
 
-        {DASHES}
+        {Dashes}
+        General Purpose Functionality
+            --get-processes
+        {Dashes}
         ETW
             --etw-providers-list
             --etw-monitor-processes
 
-        {DASHES}
+        {Dashes}
         EVTX::
         ");
     }
