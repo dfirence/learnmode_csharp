@@ -150,6 +150,7 @@ namespace Safiro.Modules
                     is_lib = peFile.ImageNtHeaders.FileHeader.Characteristics.HasFlag(PeNet.Header.Pe.FileCharacteristicsType.Dll),
                     is_dotnet = false,
                     peFile.ImageNtHeaders.FileHeader.MachineResolved,
+                    libs = GetImportedLibraries(peFile),  // List of imported DLLs
                     has_imports = peFile.ImportedFunctions != null && peFile.ImportedFunctions.Length > 0,
                     has_exports = peFile.ExportedFunctions != null && peFile.ExportedFunctions.Length > 0,
                     subsystem = peFile.ImageNtHeaders.OptionalHeader.Subsystem,
@@ -178,6 +179,24 @@ namespace Safiro.Modules
             {
                 //Console.WriteLine($"Error processing file {filePath}: {ex.Message}");
             }
+        }
+
+        private List<string> GetImportedLibraries(PeFile peFile)
+        {
+            var importedLibs = new List<string>();
+
+            if (peFile.ImportedFunctions != null)
+            {
+                foreach (var import in peFile.ImportedFunctions)
+                {
+                    if (!importedLibs.Contains(import.DLL))
+                    {
+                        importedLibs.Add(import.DLL);
+                    }
+                }
+            }
+
+            return importedLibs;
         }
 
         private async Task<(bool isValid, string sha256Hash, long fileSize)> PerformFileChecksAndHashAsync(string filePath)
