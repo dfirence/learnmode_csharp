@@ -15,8 +15,9 @@ public class PeFileInfoBuilder
     private string _subsystemCaption;
     private List<string> _libs;
     private List<object> _imports;
+    private List<object> _exports;
     private string _sha256;
-    private string _ssdeep;
+    // private string _ssdeep;
 
     public PeFileInfoBuilder SetName(string name)
     {
@@ -89,6 +90,11 @@ public class PeFileInfoBuilder
         _imports = imports;
         return this;
     }
+    public PeFileInfoBuilder SetExports(List<object> exports)
+    {
+        _exports = exports;
+        return this;
+    }
 
     public PeFileInfoBuilder SetLibs(List<string> libs)
     {
@@ -102,11 +108,11 @@ public class PeFileInfoBuilder
         return this;
     }
 
-    public PeFileInfoBuilder SetSsdeep(string ssdeep)
-    {
-        _ssdeep = ssdeep;
-        return this;
-    }
+    // public PeFileInfoBuilder SetSsdeep(string ssdeep)
+    // {
+    //     _ssdeep = ssdeep;
+    //     return this;
+    // }
 
     // Build the final object
     public object Build()
@@ -126,10 +132,11 @@ public class PeFileInfoBuilder
             subsystem_caption = _subsystemCaption,
             libs = _libs,
             imports = _imports,
+            exports = _exports,
             hashes = new
             {
                 sha2 = _sha256,
-                ssdeep = _ssdeep
+                // ssdeep = _ssdeep
             }
         };
     }
