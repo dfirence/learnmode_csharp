@@ -269,3 +269,148 @@ namespace Safiro.Modules
         }
     }
 }
+
+/*
+
+public class ProgressBar
+{
+    private readonly int _total;
+    private const int BarLength = 50;
+    private int _processed;
+    private int _accessDeniedCount;
+    private int _invalidSizeCount;
+    private int _invalidPeCount;
+
+    public ProgressBar(int total)
+    {
+        _total = total;
+        _processed = 0;
+        _accessDeniedCount = 0;
+        _invalidSizeCount = 0;
+        _invalidPeCount = 0;
+    }
+
+    public void UpdateProgress(bool isProcessed, string reason = null)
+    {
+        if (isProcessed)
+        {
+            _processed++;
+        }
+        else if (reason == "access_denied")
+        {
+            _accessDeniedCount++;
+        }
+        else if (reason == "invalid_size")
+        {
+            _invalidSizeCount++;
+        }
+        else if (reason == "invalid_pe")
+        {
+            _invalidPeCount++;
+        }
+
+        int filledLength = (int)((double)_processed / _total * BarLength);
+        int emptyLength = BarLength - filledLength;
+
+        string progressBar = $"[{new string('=', filledLength)}>{new string('.', emptyLength)}]";
+        Console.Write($"\rProcessing PE Files: {progressBar} {_processed}/{_total} " +
+                      $"| Access Denied: {_accessDeniedCount}, Invalid Size: {_invalidSizeCount}, Invalid PE: {_invalidPeCount}");
+    }
+}
+
+
+private async Task ProcessPeFileAsync(string filePath, string outputDir, ProgressBar progressBar)
+{
+    try
+    {
+        // Perform all pre-checks and hash calculation in one file open operation
+        var (isValid, sha256Hash, fileSize, reason) = await PerformFileChecksAndHashAsync(filePath);
+        if (!isValid || _processedHashes.ContainsKey(sha256Hash))
+        {
+            progressBar.UpdateProgress(false, reason);  // Update progress with failure reason
+            return;
+        }
+
+        // Parse the PE file (using PeNet or your preferred library)
+        var peFile = new PeFile(filePath);
+
+        // If the file is not a valid PE structure
+        if (peFile == null)
+        {
+            progressBar.UpdateProgress(false, "invalid_pe");
+            return;
+        }
+
+        // Successful processing
+        var peInfo = new
+        {
+            name = Path.GetFileName(filePath),
+            path = Path.GetFullPath(filePath),
+            size = fileSize,
+            is_64 = peFile.Is64Bit,
+            is_lib = peFile.ImageNtHeaders.FileHeader.Characteristics.HasFlag(PeNet.Header.Pe.FileCharacteristicsType.Dll),
+            is_dotnet = false,
+            peFile.ImageNtHeaders.FileHeader.MachineResolved,
+            has_imports = peFile.ImportedFunctions != null && peFile.ImportedFunctions.Length > 0,
+            has_exports = peFile.ExportedFunctions != null && peFile.ExportedFunctions.Length > 0,
+            subsystem = peFile.ImageNtHeaders.OptionalHeader.Subsystem,
+            subsystem_caption = peFile.ImageNtHeaders.OptionalHeader.SubsystemResolved,
+            libs = GetImportedLibraries(peFile),
+            imports = GetImports(peFile),
+            hashes = new
+            {
+                sha2 = sha256Hash,
+                ssdeep = "SSDEEP Not Implemented in PeNet"
+            }
+        };
+
+        var jsonOptions = new JsonSerializerOptions { WriteIndented = true };
+        string json = JsonSerializer.Serialize(peInfo, jsonOptions);
+
+        string randomInteger = new Random().Next(100000, 999999).ToString();
+        string outputFilePath = Path.Combine(outputDir, $"{Path.GetFileNameWithoutExtension(filePath)}__{randomInteger}.json");
+
+        await File.WriteAllTextAsync(outputFilePath, json);
+
+        _processedHashes.TryAdd(sha256Hash, filePath);
+        progressBar.UpdateProgress(true);  // Successful processing
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error processing file {filePath}: {ex.Message}");
+    }
+}
+
+private async Task<(bool isValid, string sha256Hash, long fileSize, string reason)> PerformFileChecksAndHashAsync(string filePath)
+{
+    try
+    {
+        using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true))
+        {
+            long fileSize = stream.Length;
+            if (fileSize < 1024)  // File too small to be a valid PE
+            {
+                Console.WriteLine($"File too small to be a valid PE: {filePath}");
+                return (false, null, fileSize, "invalid_size");
+            }
+
+            Memory<byte> buffer = new byte[fileSize];
+            await stream.ReadAsync(buffer);
+
+            string sha256Hash = ComputeSha256Hash(buffer.Span);
+            return (true, sha256Hash, fileSize, null);
+        }
+    }
+    catch (UnauthorizedAccessException)
+    {
+        Console.WriteLine($"Access denied: {filePath}");
+        return (false, null, 0, "access_denied");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error accessing or processing file {filePath}: {ex.Message}");
+        return (false, null, 0, "error");
+    }
+}
+
+*/
