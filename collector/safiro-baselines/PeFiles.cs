@@ -421,7 +421,7 @@ public class PeFileCollector
             using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true))
             {
                 long fileSize = stream.Length;
-                if (fileSize < 1024)  // File too small to be a valid PE
+                if (fileSize < 512)  // File too small to be a valid PE
                 {
                     return (false, null, fileSize, "invalid_size");
                 }
