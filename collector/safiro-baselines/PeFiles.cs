@@ -46,7 +46,7 @@ public class ProgressBar
     /// <param name="isProcessed">Indicates if the item was successfully processed.</param>
     /// <param name="reason">The reason for skipping the item. This is used when the item is not processed.</param>
     /// <param name="isSkipped">Indicates if the item was skipped due to cache. This is mutually exclusive with <paramref name="isProcessed"/>.</param>
-    public void UpdateProgress(bool isProcessed, string reason = null, bool isSkipped = false)
+    public void UpdateProgress(bool isProcessed, string? reason = null, bool isSkipped = false)
     {
         if (isSkipped)
         {
@@ -100,7 +100,9 @@ public class ProgressBar
 
         // Create the progress bar string
         string progressBar = new string('#', filledLength) + new string('-', emptyLength);
-        Console.Write($"\r[{progressBar}] {_processed}/{_total} processed");
+        // Use StdErr to ensure piping of useful data, like single-file-mode
+        // does not get transferred into the user's logfiles.
+        Console.Error.Write($"\r[{progressBar}] {_processed}/{_total} processed");
     }
 }
 
@@ -133,7 +135,7 @@ public class PeFileCollector
         var tasks = directories.Select(dir => Task.Run(() => CollectPeFilesAsync(dir, outputDir)));
         await Task.WhenAll(tasks);
         stopwatch.Stop();
-        Console.WriteLine($"PE file processing completed in {stopwatch.Elapsed.TotalSeconds:F2} seconds.");
+        Console.Error.WriteLine($"PE file processing completed in {stopwatch.Elapsed.TotalSeconds:F2} seconds.");
     }
     // Method to process a single PE file, outputDir defaults to null
     public async Task CollectSingleFileAsync(string filePath)
@@ -183,6 +185,7 @@ public class PeFileCollector
 
             // Try to enumerate files
             IEnumerable<string> files = Enumerable.Empty<string>();
+#pragma warning disable CS0168 // Variable is declared but never used
             try
             {
                 files = Directory.EnumerateFiles(currentDir, "*.*", SearchOption.TopDirectoryOnly)
@@ -196,6 +199,7 @@ public class PeFileCollector
             {
                 continue;
             }
+#pragma warning restore CS0168 // Variable is declared but never used
 
             // Yield the valid files
             foreach (var file in files)
@@ -204,6 +208,7 @@ public class PeFileCollector
             }
 
             // Try to enumerate directories and add them to the stack
+#pragma warning disable CS0168 // Variable is declared but never used
             try
             {
                 foreach (var subDir in Directory.EnumerateDirectories(currentDir))
@@ -219,11 +224,13 @@ public class PeFileCollector
             {
                 //Console.WriteLine($"Error enumerating directories in {currentDir}: {ex.Message}");
             }
+#pragma warning restore CS0168 // Variable is declared but never used
         }
     }
 
-    private async Task ProcessPeFileAsync(string filePath, string outputDir, ProgressBar progressBar)
+    private async Task ProcessPeFileAsync(string filePath, string? outputDir, ProgressBar progressBar)
     {
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
         try
         {
             // Perform all pre-checks and hash calculation in one file open operation
@@ -251,24 +258,64 @@ public class PeFileCollector
                 return;
             }
 
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             var peInfo = new PeFileInfoBuilder()
+                /// Assign Name of Pe File
                 .SetName(Path.GetFileName(filePath))
+                /// Assign Full Path Of Pe File
                 .SetPath(Path.GetFullPath(filePath))
+                /// Assign File Size of Pe File
                 .SetSize(fileSize)
+                /// Assign either 32 or 64 Bit
                 .SetIs64Bit(peFile.Is64Bit)
+                /// Assign metadata if this Pe File is a DLL
                 .SetIsLib(peFile.ImageNtHeaders.FileHeader.Characteristics.HasFlag(PeNet.Header.Pe.FileCharacteristicsType.Dll))
+                /// Assign a boolean flag to determine if CLR header is present
                 .SetIsDotNet(peFile.ImageComDescriptor != null)
+                /// Assign metadata about the machine arhictecture
                 .SetMachineResolved(peFile.ImageNtHeaders.FileHeader.MachineResolved)
+                /// Assign boolean flag to indicate if it has an IAT
                 .SetHasImports(peFile.ImportedFunctions != null && peFile.ImportedFunctions.Length > 0)
+                /// Assign boolean flag to indicate if it has en EAT
                 .SetHasExports(peFile.ExportedFunctions != null && peFile.ExportedFunctions.Length > 0)
+                /// Assign an short to identify the subsystem type
                 .SetSubsystem((ushort)peFile.ImageNtHeaders.OptionalHeader.Subsystem)
+                /// Assign a human descriptor of the Subsystem
                 .SetSubsystemCaption(peFile.ImageNtHeaders.OptionalHeader.SubsystemResolved)
+                /// Add an array of imported libs
                 .SetLibs(GetImportedLibraries(peFile))
+                /// Add an array of imported functions
                 .SetImports(GetImports(peFile))
+                /// Add an array of exported functions
                 .SetExports(GetExports(peFile))
-                .SetSha256(sha256Hash)
-                .Build();
-            // Check if outputDir is null, if so, output to console (stdout)
+                /// Add the sha256 of the Pe File
+                .SetSha256(sha256Hash);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+            if (
+                peFile.Resources != null
+                && peFile.Resources.VsVersionInfo != null
+                && peFile.Resources.VsVersionInfo.StringFileInfo != null
+            )
+            {
+#pragma warning disable CS8604 // Possible null reference argument.
+                var v = peFile.Resources.VsVersionInfo.StringFileInfo;
+                if (v.StringTable[0].OriginalFilename != null)
+                {
+                    peInfo.SetOriginalFilename(
+                        v.StringTable[0].OriginalFilename);
+                }
+                if (v.StringTable[0].CompanyName != null)
+                {
+                    peInfo.SetCompanyName(v.StringTable[0].CompanyName);
+                }
+                if (v.StringTable[0].FileVersion != null)
+                {
+                    peInfo.SetFileVersion(v.StringTable[0].FileVersion);
+                }
+#pragma warning restore CS8604 // Possible null reference argument.
+            }
+
+            var parsedPe = peInfo.Build();
             var jsonOptions = new JsonSerializerOptions
             {
                 WriteIndented = true
@@ -276,19 +323,19 @@ public class PeFileCollector
 
             if (outputDir == null)
             {
-                string json = JsonSerializer.Serialize(peInfo, jsonOptions);
+                string json = JsonSerializer.Serialize(parsedPe, jsonOptions);
                 Console.WriteLine(json); // Output to console
             }
             else
             {
-                string json = JsonSerializer.Serialize(peInfo, jsonOptions);
+                string json = JsonSerializer.Serialize(parsedPe, jsonOptions);
                 string uniqueFileName = $"{Path.GetFileName(filePath)}__{Guid.NewGuid()}.json";
                 string outputFilePath = Path.Combine(outputDir, uniqueFileName);
                 await File.WriteAllTextAsync(outputFilePath, json);
             }
             progressBar.UpdateProgress(true);  // Successful processing
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             progressBar.UpdateProgress(false, "invalid_pe");
             // Handle exceptions if necessary
@@ -365,6 +412,7 @@ public class PeFileCollector
 
     private async Task<(bool isValid, string sha256Hash, long fileSize, string reason)> PerformFileChecksAndHashAsync(string filePath)
     {
+#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
         try
         {
             using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true))
@@ -386,10 +434,11 @@ public class PeFileCollector
         {
             return (false, null, 0, "access_denied");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return (false, null, 0, "error");
         }
+#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
     }
 
     private string ComputeSha256Hash(ReadOnlySpan<byte> fileData)

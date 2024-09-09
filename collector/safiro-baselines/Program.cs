@@ -19,23 +19,25 @@ namespace Safiro
             }
 
             string inputPath = args[0];
-            string outputDir = args.Length > 1 ? args[1] : null;
+            string? outputDir = args.Length > 1 ? args[1] : null;
 
             // If input is a file, process the single file
             if (File.Exists(inputPath))
             {
-                Console.WriteLine($"Scanning single file: {inputPath}");
+                Console.Error.WriteLine($"Scanning single file: {inputPath}");
                 await peCollector.CollectSingleFileAsync(inputPath); // No outputDir for single file mode
             }
             // If input is a directory, process all PE files in the directory
             else if (Directory.Exists(inputPath))
             {
-                Console.WriteLine($"Scanning directory: {inputPath}");
+                Console.Error.WriteLine($"Scanning directory: {inputPath}");
                 if (outputDir != null && !Directory.Exists(outputDir))
                 {
                     Directory.CreateDirectory(outputDir); // Ensure output directory exists
                 }
+#pragma warning disable CS8604 // Possible null reference argument.
                 await peCollector.CollectFilesFromMultipleAreasAsync(outputDir); // Pass the outputDir
+#pragma warning restore CS8604 // Possible null reference argument.
             }
             else
             {

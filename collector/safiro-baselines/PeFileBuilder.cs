@@ -2,22 +2,24 @@ namespace Safiro.Modules.FileCollectors.PeFiles;
 
 public class PeFileInfoBuilder
 {
-    private string _name;
-    private string _path;
+    private string? _name;
+    private string? _path;
     private long _size;
     private bool _is64Bit;
     private bool _isLib;
     private bool _isDotNet;
-    private string _machineResolved;
+    private string? _machineResolved;
     private bool _hasImports;
     private bool _hasExports;
     private ushort _subsystem;
-    private string _subsystemCaption;
-    private List<string> _libs;
-    private List<object> _imports;
-    private List<object> _exports;
-    private string _sha256;
-    // private string _ssdeep;
+    private string? _subsystemCaption;
+    private List<string>? _libs;
+    private List<object>? _imports;
+    private List<object>? _exports;
+    private string? _sha256;
+    private string? _originalFilename;
+    private string? _companyName;
+    private string? _fileVersion;
 
     public PeFileInfoBuilder SetName(string name)
     {
@@ -107,7 +109,26 @@ public class PeFileInfoBuilder
         _sha256 = sha256;
         return this;
     }
-
+    public PeFileInfoBuilder SetOriginalFilename(string originalFilename)
+    {
+        _originalFilename = originalFilename;
+        return this;
+    }
+    public PeFileInfoBuilder SetCompanyName(string companyName)
+    {
+        _companyName = companyName;
+        return this;
+    }
+    public PeFileInfoBuilder SetFileVersion(string fileVersion)
+    {
+        _fileVersion = fileVersion;
+        return this;
+    }
+    // public PeFileInfoBuilder SetProductName(string productName)
+    // {
+    //     _productName = productName;
+    //     return this;
+    // }
     // public PeFileInfoBuilder SetSsdeep(string ssdeep)
     // {
     //     _ssdeep = ssdeep;
@@ -126,6 +147,12 @@ public class PeFileInfoBuilder
             is_lib = _isLib,
             is_dotnet = _isDotNet,
             machineResolved = _machineResolved,
+            meta = new
+            {
+                company_name = _companyName,
+                file_version = _fileVersion,
+                original_filename = _originalFilename
+            },
             has_imports = _hasImports,
             has_exports = _hasExports,
             subsystem = _subsystem,
@@ -141,63 +168,3 @@ public class PeFileInfoBuilder
         };
     }
 }
-
-/*
-private async Task ProcessPeFileAsync(string filePath, string outputDir, ProgressBar progressBar)
-{
-    try
-    {
-        // Perform all pre-checks and hash calculation in one file open operation
-        var (isValid, sha256Hash, fileSize, reason) = await PerformFileChecksAndHashAsync(filePath);
-        if (!isValid || _processedHashes.ContainsKey(sha256Hash))
-        {
-            progressBar.UpdateProgress(false, reason);  // Update progress with failure reason
-            return;
-        }
-
-        // Parse the PE file (using PeNet or your preferred library)
-        var peFile = new PeFile(filePath);
-
-        // If the file is not a valid PE structure
-        if (peFile == null)
-        {
-            progressBar.UpdateProgress(false, "invalid_pe");
-            return;
-        }
-
-        // Build the peInfo object using the PeFileInfoBuilder
-        var peInfo = new PeFileInfoBuilder()
-            .SetName(Path.GetFileName(filePath))
-            .SetPath(Path.GetFullPath(filePath))
-            .SetSize(fileSize)
-            .SetIs64Bit(peFile.Is64Bit)
-            .SetIsLib(peFile.ImageNtHeaders.FileHeader.Characteristics.HasFlag(PeNet.Header.Pe.FileCharacteristicsType.Dll))
-            .SetIsDotNet(false) // Assuming this is set to false
-            .SetMachineResolved(peFile.ImageNtHeaders.FileHeader.MachineResolved)
-            .SetHasImports(peFile.ImportedFunctions != null && peFile.ImportedFunctions.Length > 0)
-            .SetHasExports(peFile.ExportedFunctions != null && peFile.ExportedFunctions.Length > 0)
-            .SetSubsystem(peFile.ImageNtHeaders.OptionalHeader.Subsystem)
-            .SetSubsystemCaption(peFile.ImageNtHeaders.OptionalHeader.SubsystemResolved)
-            .SetLibs(GetImportedLibraries(peFile))
-            .SetImports(GetImports(peFile))
-            .SetSha256(sha256Hash)
-            .SetSsdeep("SSDEEP Not Implemented in PeNet")
-            .Build(); // Build the object
-
-        var jsonOptions = new JsonSerializerOptions { WriteIndented = true };
-        string json = JsonSerializer.Serialize(peInfo, jsonOptions);
-
-        string randomInteger = new Random().Next(100000, 999999).ToString();
-        string outputFilePath = Path.Combine(outputDir, $"{Path.GetFileNameWithoutExtension(filePath)}__{randomInteger}.json");
-
-        await File.WriteAllTextAsync(outputFilePath, json);
-
-        _processedHashes.TryAdd(sha256Hash, filePath);
-        progressBar.UpdateProgress(true);  // Successful processing
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error processing file {filePath}: {ex.Message}");
-    }
-}
-*/
