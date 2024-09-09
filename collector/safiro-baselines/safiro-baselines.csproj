@@ -7,7 +7,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugType>None</DebugType>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="PeNet" Version="4.0.5" />
   </ItemGroup>
