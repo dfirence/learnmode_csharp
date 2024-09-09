@@ -1,33 +1,48 @@
-﻿namespace Safiro;
-
-using Safiro.Modules.FileCollectors.PeFiles;
+﻿using Safiro.Modules.FileCollectors.PeFiles;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
-public class Program
+namespace Safiro
 {
-    public static async Task Main(string[] args)
+    public class Program
     {
-        var peCollector = new PeFileCollector();
-        // string target_dir = @"C:\Windows\System32";
-        string outputDir = @"C:\users\archir\Desktop\Testing";   // Path to output directory (for JSON, CSV, etc.)
-
-        // Ensure the output directory exists
-        if (!System.IO.Directory.Exists(outputDir))
+        public static async Task Main(string[] args)
         {
-            System.IO.Directory.CreateDirectory(outputDir);
+            var peCollector = new PeFileCollector();
+
+            // Ensure at least one argument is provided
+            if (args.Length < 1)
+            {
+                Console.WriteLine("Usage: Safiro.exe <file_or_directory_path> [output_directory]");
+                return;
+            }
+
+            string inputPath = args[0];
+            string outputDir = args.Length > 1 ? args[1] : null;
+
+            // If input is a file, process the single file
+            if (File.Exists(inputPath))
+            {
+                Console.WriteLine($"Scanning single file: {inputPath}");
+                await peCollector.CollectSingleFileAsync(inputPath); // No outputDir for single file mode
+            }
+            // If input is a directory, process all PE files in the directory
+            else if (Directory.Exists(inputPath))
+            {
+                Console.WriteLine($"Scanning directory: {inputPath}");
+                if (outputDir != null && !Directory.Exists(outputDir))
+                {
+                    Directory.CreateDirectory(outputDir); // Ensure output directory exists
+                }
+                await peCollector.CollectFilesFromMultipleAreasAsync(outputDir); // Pass the outputDir
+            }
+            else
+            {
+                Console.WriteLine($"Invalid path: {inputPath} is neither a file nor a directory.");
+            }
+
+            Console.WriteLine("\nPE file processing completed.");
         }
-
-        // Call the ProcessPeFileAsync method to collect PE file metadata asynchronously
-        await peCollector.CollectFilesFromMultipleAreasAsync(outputDir);
-
-        Console.WriteLine("\nPE file processing completed.");
     }
-}
-
-
-public class ProgressBar
-{
-    // Placeholder class for progress bar. Implement it if you want to show progress updates.
-    // For now, it's just an empty class.
 }

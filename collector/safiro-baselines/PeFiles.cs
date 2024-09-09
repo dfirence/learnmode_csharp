@@ -1,28 +1,33 @@
-using System;
 using System.Collections.Concurrent;
-using System.IO;
 using System.Security.Cryptography;
 using System.Text.Json;
-using System.Threading.Tasks;
+//using System.Threading.Tasks;
 using System.Diagnostics;
 
 using PeNet;
 
 namespace Safiro.Modules.FileCollectors.PeFiles;
 
-
+/// <summary>
+/// Represents a progress bar that tracks the processing progress and provides updates on completion status.
+/// </summary>
 public class ProgressBar
 {
-    private readonly int _total;
-    private const int BarLength = 50;
-    private readonly int _updateThreshold;
-    private int _processed;
-    private int _accessDeniedCount;
-    private int _invalidSizeCount;
-    private int _invalidPeCount;
-    private int _skippedCount;  // Count for files that are skipped due to cache
-    private int _lastUpdateCount;
+    private readonly int _total; // Total number of items to process
+    private const int BarLength = 50; // Length of the progress bar
+    private readonly int _updateThreshold; // Number of processed items needed to update the progress bar
+    private int _processed; // Number of items processed
+    private int _accessDeniedCount; // Number of items skipped due to access denial
+    private int _invalidSizeCount; // Number of items skipped due to invalid size
+    private int _invalidPeCount; // Number of items skipped due to invalid PE (Portable Executable) format
+    private int _skippedCount; // Number of items skipped due to cache
+    private int _lastUpdateCount; // Last count of processed items at the time of the last update
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ProgressBar"/> class.
+    /// </summary>
+    /// <param name="total">The total number of items to process.</param>
+    /// <param name="updateThreshold">The number of processed items required to update the progress bar. Default is 100.</param>
     public ProgressBar(int total, int updateThreshold = 100)
     {
         _total = total;
@@ -30,11 +35,17 @@ public class ProgressBar
         _accessDeniedCount = 0;
         _invalidSizeCount = 0;
         _invalidPeCount = 0;
-        _skippedCount = 0;  // Initialize skipped files count
+        _skippedCount = 0; // Initialize skipped files count
         _updateThreshold = updateThreshold;
         _lastUpdateCount = 0;
     }
 
+    /// <summary>
+    /// Updates the progress based on the processing status of an item.
+    /// </summary>
+    /// <param name="isProcessed">Indicates if the item was successfully processed.</param>
+    /// <param name="reason">The reason for skipping the item. This is used when the item is not processed.</param>
+    /// <param name="isSkipped">Indicates if the item was skipped due to cache. This is mutually exclusive with <paramref name="isProcessed"/>.</param>
     public void UpdateProgress(bool isProcessed, string reason = null, bool isSkipped = false)
     {
         if (isSkipped)
@@ -66,7 +77,9 @@ public class ProgressBar
         }
     }
 
-    // Ensure the final progress is displayed when processing completes
+    /// <summary>
+    /// Displays the final progress state when processing is complete.
+    /// </summary>
     public void Complete()
     {
         if (_processed < _total)
@@ -77,21 +90,29 @@ public class ProgressBar
         Console.WriteLine();   // Move to the next line after completion
     }
 
+    /// <summary>
+    /// Displays the progress bar on the console.
+    /// </summary>
     private void DisplayProgressBar()
     {
         int filledLength = (int)((double)_processed / _total * BarLength);
         int emptyLength = BarLength - filledLength;
 
-        string progressBar = $"[{new string('=', filledLength)}>{new string('.', emptyLength)}]";
-        Console.Write($"\rProcessing PE Files: {progressBar} {_processed}/{_total} " +
-                      $"| Cached (Skipped): {_skippedCount}, Access Denied: {_accessDeniedCount}, Invalid Size: {_invalidSizeCount}, Invalid PE: {_invalidPeCount}");
+        // Create the progress bar string
+        string progressBar = new string('#', filledLength) + new string('-', emptyLength);
+        Console.Write($"\r[{progressBar}] {_processed}/{_total} processed");
     }
 }
 
 
 public class PeFileCollector
 {
-    private readonly string[] _peExtensions = new[] { ".exe", ".com", ".sys", ".dll", ".cpl" };
+    private readonly string[] _peExtensions = new[]
+    {
+        ".acm", ".com", ".cpl", ".dll", ".drv", ".efi",
+        ".exe", ".msi", ".msu", ".ocx", ".scr", ".sys",
+        ".tsp"
+    };
     private readonly ConcurrentDictionary<string, string> _processedHashes = new ConcurrentDictionary<string, string>();
     private const int BatchSize = 100; // Define batch size for file processing
 
@@ -100,7 +121,13 @@ public class PeFileCollector
         // Start the stopwatch
         Stopwatch stopwatch = Stopwatch.StartNew();
         // Define the directories
-        string[] directories = { @"C:\Windows" };
+        string[] directories = {
+            @"C:\Windows",
+            // @"C:\Users",
+            // @"C:\ProgramData\",
+            // @"C:\Program Files\",
+            // @"C:\Program Files (x86)\"
+        };
 
         // Run each directory processing task in parallel
         var tasks = directories.Select(dir => Task.Run(() => CollectPeFilesAsync(dir, outputDir)));
@@ -108,7 +135,13 @@ public class PeFileCollector
         stopwatch.Stop();
         Console.WriteLine($"PE file processing completed in {stopwatch.Elapsed.TotalSeconds:F2} seconds.");
     }
-
+    // Method to process a single PE file, outputDir defaults to null
+    public async Task CollectSingleFileAsync(string filePath)
+    {
+        var progressBar = new ProgressBar(1);
+        await ProcessPeFileAsync(filePath, null, progressBar); // outputDir is null for single file mode
+        progressBar.Complete();
+    }
     private async Task CollectPeFilesAsync(string rootPath, string outputDir)
     {
         try
@@ -144,7 +177,7 @@ public class PeFileCollector
             var dirInfo = new DirectoryInfo(currentDir);
             if (dirInfo.Attributes.HasFlag(FileAttributes.ReparsePoint))
             {
-                Console.WriteLine($"Skipping reparse point: {currentDir}");
+                Console.WriteLine($"\nSkipping reparse point: {currentDir}");
                 continue;
             }
 
@@ -224,7 +257,7 @@ public class PeFileCollector
                 .SetSize(fileSize)
                 .SetIs64Bit(peFile.Is64Bit)
                 .SetIsLib(peFile.ImageNtHeaders.FileHeader.Characteristics.HasFlag(PeNet.Header.Pe.FileCharacteristicsType.Dll))
-                .SetIsDotNet(false)
+                .SetIsDotNet(peFile.ImageComDescriptor != null)
                 .SetMachineResolved(peFile.ImageNtHeaders.FileHeader.MachineResolved)
                 .SetHasImports(peFile.ImportedFunctions != null && peFile.ImportedFunctions.Length > 0)
                 .SetHasExports(peFile.ExportedFunctions != null && peFile.ExportedFunctions.Length > 0)
@@ -235,19 +268,29 @@ public class PeFileCollector
                 .SetExports(GetExports(peFile))
                 .SetSha256(sha256Hash)
                 .Build();
+            // Check if outputDir is null, if so, output to console (stdout)
+            var jsonOptions = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
 
-            var jsonOptions = new JsonSerializerOptions { WriteIndented = true };
-            string json = JsonSerializer.Serialize(peInfo, jsonOptions);
-
-            string randomInteger = new Random().Next(100000, 999999).ToString();
-            string outputFilePath = Path.Combine(outputDir, $"{Path.GetFileName(filePath)}__{randomInteger}.json");
-
-            await File.WriteAllTextAsync(outputFilePath, json);
-
+            if (outputDir == null)
+            {
+                string json = JsonSerializer.Serialize(peInfo, jsonOptions);
+                Console.WriteLine(json); // Output to console
+            }
+            else
+            {
+                string json = JsonSerializer.Serialize(peInfo, jsonOptions);
+                string uniqueFileName = $"{Path.GetFileName(filePath)}__{Guid.NewGuid()}.json";
+                string outputFilePath = Path.Combine(outputDir, uniqueFileName);
+                await File.WriteAllTextAsync(outputFilePath, json);
+            }
             progressBar.UpdateProgress(true);  // Successful processing
         }
         catch (Exception ex)
         {
+            progressBar.UpdateProgress(false, "invalid_pe");
             // Handle exceptions if necessary
         }
     }
@@ -273,18 +316,23 @@ public class PeFileCollector
     private List<object> GetImports(PeFile peFile)
     {
         var imports = new Dictionary<string, List<string>>();
-
+        var result = new List<object>();
+        if (peFile.ImportedFunctions == null)
+        {
+            return result;
+        }
         foreach (var import in peFile.ImportedFunctions)
         {
             if (!imports.ContainsKey(import.DLL))
             {
                 imports[import.DLL] = new List<string>();
             }
-
-            imports[import.DLL].Add(import.Name ?? $"ORDINAL"); // Fixed this line
+            if (import.Name != null)
+            {
+                imports[import.DLL].Add(import.Name);
+            }
         }
 
-        var result = new List<object>();
         foreach (var lib in imports)
         {
             lib.Value.Sort();
