@@ -1,4 +1,26 @@
 namespace Safiro.Modules.FileCollectors.PeFiles;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+
+public class IgnoreEmptyCollectionsConverter<T> : JsonConverter<T> where T : IEnumerable<object>
+{
+    public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        // Default deserialization for collections
+#pragma warning disable CS8603 // Possible null reference return.
+        return JsonSerializer.Deserialize<T>(ref reader, options);
+#pragma warning restore CS8603 // Possible null reference return.
+    }
+
+    public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+    {
+        // If the collection is not empty, serialize it
+        if (value != null && value.Any())
+        {
+            JsonSerializer.Serialize(writer, value, options);
+        }
+    }
+}
 
 public class PeFileInfoBuilder
 {
@@ -13,9 +35,16 @@ public class PeFileInfoBuilder
     private bool _hasExports;
     private ushort _subsystem;
     private string? _subsystemCaption;
+
+    [JsonConverter(typeof(IgnoreEmptyCollectionsConverter<List<string>>))]
     private List<string>? _libs;
+
+    [JsonConverter(typeof(IgnoreEmptyCollectionsConverter<List<string>>))]
     private List<object>? _imports;
+
+    [JsonConverter(typeof(IgnoreEmptyCollectionsConverter<List<string>>))]
     private List<object>? _exports;
+
     private string? _sha256;
     private string? _originalFilename;
     private string? _companyName;

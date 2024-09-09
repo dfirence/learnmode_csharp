@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Security.Cryptography;
+using System.Text.Json.Serialization;
 using System.Text.Json;
 //using System.Threading.Tasks;
 using System.Diagnostics;
@@ -189,7 +190,9 @@ public class PeFileCollector
             try
             {
                 files = Directory.EnumerateFiles(currentDir, "*.*", SearchOption.TopDirectoryOnly)
-                                 .Where(file => _peExtensions.Contains(Path.GetExtension(file).ToLower()));
+                            .Where(file => _peExtensions.Contains(
+                                Path.GetExtension(file).ToLower()
+                            ));
             }
             catch (UnauthorizedAccessException)
             {
@@ -208,7 +211,6 @@ public class PeFileCollector
             }
 
             // Try to enumerate directories and add them to the stack
-#pragma warning disable CS0168 // Variable is declared but never used
             try
             {
                 foreach (var subDir in Directory.EnumerateDirectories(currentDir))
@@ -218,13 +220,10 @@ public class PeFileCollector
             }
             catch (UnauthorizedAccessException)
             {
-                //Console.WriteLine($"Access denied: {currentDir}");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                //Console.WriteLine($"Error enumerating directories in {currentDir}: {ex.Message}");
             }
-#pragma warning restore CS0168 // Variable is declared but never used
         }
     }
 
@@ -291,6 +290,7 @@ public class PeFileCollector
                 /// Add the sha256 of the Pe File
                 .SetSha256(sha256Hash);
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
+
             if (
                 peFile.Resources != null
                 && peFile.Resources.VsVersionInfo != null
@@ -318,6 +318,7 @@ public class PeFileCollector
             var parsedPe = peInfo.Build();
             var jsonOptions = new JsonSerializerOptions
             {
+                //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 WriteIndented = true
             };
 
@@ -329,7 +330,9 @@ public class PeFileCollector
             else
             {
                 string json = JsonSerializer.Serialize(parsedPe, jsonOptions);
-                string uniqueFileName = $"{Path.GetFileName(filePath)}__{Guid.NewGuid()}.json";
+                string uniqueFileName =
+                    $"{Path.GetFileName(filePath)}__{Guid.NewGuid()}.json";
+
                 string outputFilePath = Path.Combine(outputDir, uniqueFileName);
                 await File.WriteAllTextAsync(outputFilePath, json);
             }
