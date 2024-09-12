@@ -1,0 +1,163 @@
+// Validating benchmarks:
+// ***** BenchmarkRunner: Start   *****
+// ***** Found 1 benchmark(s) in total *****
+// ***** Building 1 exe(s) in Parallel: Start   *****
+// start dotnet restore  /p:UseSharedCompilation=false /p:BuildInParallel=false /m:1 /p:Deterministic=true /p:Optimize=true in /Users/dfirence/Documents/my_code/csharp/patricia/bin/Release/net8.0/11186f7c-cfa9-4408-a2e5-2b23668a772c
+// command took 1.33s and exited with 0
+// start dotnet build -c Release  --no-restore /p:UseSharedCompilation=false /p:BuildInParallel=false /m:1 /p:Deterministic=true /p:Optimize=true in /Users/dfirence/Documents/my_code/csharp/patricia/bin/Release/net8.0/11186f7c-cfa9-4408-a2e5-2b23668a772c
+// command took 2.93s and exited with 0
+// ***** Done, took 00:00:04 (4.31 sec)   *****
+// Found 1 benchmarks:
+//   TrieBenchmark.LookupTest: DefaultJob
+
+// **************************
+// Benchmark: TrieBenchmark.LookupTest: DefaultJob
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet "11186f7c-cfa9-4408-a2e5-2b23668a772c.dll" --benchmarkName "Patricia.Benchmarks.TrieBenchmark.LookupTest" --job "Default" --benchmarkId 0 in /Users/dfirence/Documents/my_code/csharp/patricia/bin/Release/net8.0/11186f7c-cfa9-4408-a2e5-2b23668a772c/bin/Release/net8.0
+Failed to set up high priority. Make sure you have the right permissions. Message: Permission denied
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// Runtime=.NET 8.0.5 (8.0.524.21615), X64 RyuJIT
+// GC=Concurrent Workstation
+// Job: DefaultJob
+
+OverheadJitting  1: 1 op, 254151.00 ns, 254.1510 us/op
+WorkloadJitting  1: 1 op, 993241.00 ns, 993.2410 us/op
+
+OverheadJitting  2: 16 op, 287149.00 ns, 17.9468 us/op
+WorkloadJitting  2: 16 op, 1074385.00 ns, 67.1491 us/op
+
+WorkloadPilot    1: 16 op, 737499.00 ns, 46.0937 us/op
+WorkloadPilot    2: 32 op, 1421500.00 ns, 44.4219 us/op
+WorkloadPilot    3: 64 op, 2788914.00 ns, 43.5768 us/op
+WorkloadPilot    4: 128 op, 5708239.00 ns, 44.5956 us/op
+WorkloadPilot    5: 256 op, 10931426.00 ns, 42.7009 us/op
+WorkloadPilot    6: 512 op, 23779314.00 ns, 46.4440 us/op
+WorkloadPilot    7: 1024 op, 39908774.00 ns, 38.9734 us/op
+WorkloadPilot    8: 2048 op, 96129528.00 ns, 46.9382 us/op
+WorkloadPilot    9: 4096 op, 75927833.00 ns, 18.5371 us/op
+WorkloadPilot   10: 8192 op, 133430105.00 ns, 16.2879 us/op
+WorkloadPilot   11: 16384 op, 238773195.00 ns, 14.5736 us/op
+WorkloadPilot   12: 32768 op, 474505589.00 ns, 14.4808 us/op
+WorkloadPilot   13: 65536 op, 958803338.00 ns, 14.6302 us/op
+
+OverheadWarmup   1: 65536 op, 1300725.00 ns, 19.8475 ns/op
+OverheadWarmup   2: 65536 op, 1285525.00 ns, 19.6156 ns/op
+OverheadWarmup   3: 65536 op, 1294772.00 ns, 19.7567 ns/op
+OverheadWarmup   4: 65536 op, 339658.00 ns, 5.1828 ns/op
+OverheadWarmup   5: 65536 op, 344873.00 ns, 5.2623 ns/op
+OverheadWarmup   6: 65536 op, 344435.00 ns, 5.2557 ns/op
+
+OverheadActual   1: 65536 op, 343845.00 ns, 5.2467 ns/op
+OverheadActual   2: 65536 op, 344345.00 ns, 5.2543 ns/op
+OverheadActual   3: 65536 op, 350222.00 ns, 5.3440 ns/op
+OverheadActual   4: 65536 op, 342612.00 ns, 5.2278 ns/op
+OverheadActual   5: 65536 op, 340749.00 ns, 5.1994 ns/op
+OverheadActual   6: 65536 op, 344410.00 ns, 5.2553 ns/op
+OverheadActual   7: 65536 op, 344281.00 ns, 5.2533 ns/op
+OverheadActual   8: 65536 op, 341646.00 ns, 5.2131 ns/op
+OverheadActual   9: 65536 op, 341911.00 ns, 5.2171 ns/op
+OverheadActual  10: 65536 op, 390265.00 ns, 5.9550 ns/op
+OverheadActual  11: 65536 op, 336884.00 ns, 5.1404 ns/op
+OverheadActual  12: 65536 op, 335841.00 ns, 5.1245 ns/op
+OverheadActual  13: 65536 op, 348373.00 ns, 5.3158 ns/op
+OverheadActual  14: 65536 op, 324708.00 ns, 4.9547 ns/op
+OverheadActual  15: 65536 op, 323778.00 ns, 4.9405 ns/op
+
+WorkloadWarmup   1: 65536 op, 949343758.00 ns, 14.4858 us/op
+WorkloadWarmup   2: 65536 op, 955804847.00 ns, 14.5844 us/op
+WorkloadWarmup   3: 65536 op, 944384345.00 ns, 14.4102 us/op
+WorkloadWarmup   4: 65536 op, 963845901.00 ns, 14.7071 us/op
+WorkloadWarmup   5: 65536 op, 929914025.00 ns, 14.1894 us/op
+WorkloadWarmup   6: 65536 op, 941239920.00 ns, 14.3622 us/op
+
+// BeforeActualRun
+WorkloadActual   1: 65536 op, 941862554.00 ns, 14.3717 us/op
+WorkloadActual   2: 65536 op, 935489205.00 ns, 14.2744 us/op
+WorkloadActual   3: 65536 op, 938810048.00 ns, 14.3251 us/op
+WorkloadActual   4: 65536 op, 936860128.00 ns, 14.2954 us/op
+WorkloadActual   5: 65536 op, 946238444.00 ns, 14.4385 us/op
+WorkloadActual   6: 65536 op, 936289345.00 ns, 14.2866 us/op
+WorkloadActual   7: 65536 op, 963592231.00 ns, 14.7033 us/op
+WorkloadActual   8: 65536 op, 928561437.00 ns, 14.1687 us/op
+WorkloadActual   9: 65536 op, 955017009.00 ns, 14.5724 us/op
+WorkloadActual  10: 65536 op, 943002912.00 ns, 14.3891 us/op
+WorkloadActual  11: 65536 op, 958792139.00 ns, 14.6300 us/op
+WorkloadActual  12: 65536 op, 947855674.00 ns, 14.4631 us/op
+WorkloadActual  13: 65536 op, 964761536.00 ns, 14.7211 us/op
+WorkloadActual  14: 65536 op, 956672309.00 ns, 14.5977 us/op
+WorkloadActual  15: 65536 op, 967340778.00 ns, 14.7604 us/op
+
+// AfterActualRun
+WorkloadResult   1: 65536 op, 941519942.00 ns, 14.3665 us/op
+WorkloadResult   2: 65536 op, 935146593.00 ns, 14.2692 us/op
+WorkloadResult   3: 65536 op, 938467436.00 ns, 14.3199 us/op
+WorkloadResult   4: 65536 op, 936517516.00 ns, 14.2901 us/op
+WorkloadResult   5: 65536 op, 945895832.00 ns, 14.4332 us/op
+WorkloadResult   6: 65536 op, 935946733.00 ns, 14.2814 us/op
+WorkloadResult   7: 65536 op, 963249619.00 ns, 14.6980 us/op
+WorkloadResult   8: 65536 op, 928218825.00 ns, 14.1635 us/op
+WorkloadResult   9: 65536 op, 954674397.00 ns, 14.5672 us/op
+WorkloadResult  10: 65536 op, 942660300.00 ns, 14.3839 us/op
+WorkloadResult  11: 65536 op, 958449527.00 ns, 14.6248 us/op
+WorkloadResult  12: 65536 op, 947513062.00 ns, 14.4579 us/op
+WorkloadResult  13: 65536 op, 964418924.00 ns, 14.7159 us/op
+WorkloadResult  14: 65536 op, 956329697.00 ns, 14.5924 us/op
+WorkloadResult  15: 65536 op, 966998166.00 ns, 14.7552 us/op
+
+// AfterAll
+// Benchmark Process 87398 has exited with code 0.
+
+Mean = 14.461 μs, StdErr = 0.048 μs (0.33%), N = 15, StdDev = 0.186 μs
+Min = 14.163 μs, Q1 = 14.305 μs, Median = 14.433 μs, Q3 = 14.609 μs, Max = 14.755 μs
+IQR = 0.304 μs, LowerFence = 13.850 μs, UpperFence = 15.064 μs
+ConfidenceInterval = [14.262 μs; 14.660 μs] (CI 99.9%), Margin = 0.199 μs (1.38% of Mean)
+Skewness = 0.15, Kurtosis = 1.53, MValue = 2
+
+// ***** BenchmarkRunner: Finish  *****
+
+// * Export *
+  BenchmarkDotNet.Artifacts/results/Patricia.Benchmarks.TrieBenchmark-report.csv
+  BenchmarkDotNet.Artifacts/results/Patricia.Benchmarks.TrieBenchmark-report-github.md
+  BenchmarkDotNet.Artifacts/results/Patricia.Benchmarks.TrieBenchmark-report.html
+
+// * Detailed results *
+TrieBenchmark.LookupTest: DefaultJob
+Runtime = .NET 8.0.5 (8.0.524.21615), X64 RyuJIT; GC = Concurrent Workstation
+Mean = 14.461 μs, StdErr = 0.048 μs (0.33%), N = 15, StdDev = 0.186 μs
+Min = 14.163 μs, Q1 = 14.305 μs, Median = 14.433 μs, Q3 = 14.609 μs, Max = 14.755 μs
+IQR = 0.304 μs, LowerFence = 13.850 μs, UpperFence = 15.064 μs
+ConfidenceInterval = [14.262 μs; 14.660 μs] (CI 99.9%), Margin = 0.199 μs (1.38% of Mean)
+Skewness = 0.15, Kurtosis = 1.53, MValue = 2
+-------------------- Histogram --------------------
+[14.064 μs ; 14.507 μs) | @@@@@@@@@
+[14.507 μs ; 14.808 μs) | @@@@@@
+---------------------------------------------------
+
+// * Summary *
+
+BenchmarkDotNet=v0.13.1, OS=macOS 14.6.1 (23G93) [Darwin 23.6.0]
+Intel Core i9-9980HK CPU 2.40GHz, 1 CPU, 16 logical and 8 physical cores
+.NET SDK=8.0.300
+  [Host]     : .NET 8.0.5 (8.0.524.21615), X64 RyuJIT
+  DefaultJob : .NET 8.0.5 (8.0.524.21615), X64 RyuJIT
+
+
+|     Method |     Mean |    Error |   StdDev |
+|----------- |---------:|---------:|---------:|
+| LookupTest | 14.46 μs | 0.199 μs | 0.186 μs |
+
+// * Legends *
+  Mean   : Arithmetic mean of all measurements
+  Error  : Half of 99.9% confidence interval
+  StdDev : Standard deviation of all measurements
+  1 μs   : 1 Microsecond (0.000001 sec)
+
+// ***** BenchmarkRunner: End *****
+// ** Remained 0 benchmark(s) to run **
+Run time: 00:00:24 (24.45 sec), executed benchmarks: 1
+
+Global total time: 00:00:28 (28.77 sec), executed benchmarks: 1
+// * Artifacts cleanup *

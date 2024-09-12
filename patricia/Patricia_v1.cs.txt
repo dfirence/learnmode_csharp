@@ -1,0 +1,135 @@
+namespace Patricia
+{
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+
+    // Represents a node in the Patricia Trie
+    public class PatriciaTrieNode
+    {
+        public Dictionary<byte, PatriciaTrieNode> Children { get; set; } = new Dictionary<byte, PatriciaTrieNode>();
+        public bool IsEndOfPrefix { get; set; } = false;
+        public string? Rule { get; set; } = null;
+    }
+
+    // Represents the Patricia Trie data structure for storing CIDR prefixes
+    public class PatriciaTrie
+    {
+        private PatriciaTrieNode root = new PatriciaTrieNode();
+        public string IpToBinary(string ip)
+        {
+            // A stack-allocated fixed-size buffer to store the binary representation of the IP
+            Span<char> binaryIp = stackalloc char[32];
+
+            // Split the IP address into its octets and convert them to binary
+            var octets = ip.Split('.').Select(int.Parse).ToArray();
+            for (int i = 0; i < 4; i++)
+            {
+                Convert.ToString(octets[i], 2).PadLeft(8, '0').AsSpan().CopyTo(binaryIp.Slice(i * 8, 8));
+            }
+
+            // Convert the span to a string to ensure the memory is heap-allocated
+            return new string(binaryIp);
+        }
+
+
+        // Inserts a CIDR and associated rule into the Patricia Trie
+        public void Insert(string cidr, string rule)
+        {
+            // Skip IPv6 addresses (which contain ':')
+            if (cidr.Contains(":"))
+            {
+                //Console.WriteLine($"Skipping IPv6 address: {cidr}");
+                return;
+            }
+            var parts = cidr.Split('/');
+            string ip = parts[0];          // Extract the base IP address
+            int prefixLength = int.Parse(parts[1]);  // Extract the prefix length (subnet mask length)
+
+            // Convert the IP address to its binary representation
+            string binaryIp = IpToBinary(ip);
+
+            // Get the subnet by slicing the binary IP up to the prefix length
+            string subnet = binaryIp.Substring(0, prefixLength);
+
+            // Start at the root of the Patricia Trie
+            var node = root;
+
+            // Traverse the Trie bit by bit, creating new nodes as needed
+            foreach (char bit in subnet)
+            {
+                byte bitValue = (byte)(bit - '0');  // Convert char '0' or '1' to byte (0 or 1)
+
+                // Check if the current bit exists as a key in the dictionary, if not add it
+                if (node != null && !node.Children.ContainsKey(bitValue))
+                {
+                    // Create a new PatriciaTrieNode if the current bit ('0' or '1') is not present
+                    node.Children[bitValue] = new PatriciaTrieNode();
+                }
+
+                // Move to the next node corresponding to the current bit
+                node = node?.Children[bitValue];
+            }
+
+            // Mark the end of the CIDR prefix and assign the associated rule to the node
+            node.IsEndOfPrefix = true;
+            node.Rule = rule;
+        }
+
+        // Search for the longest matching rule in the Trie based on the given IP address
+        public string? Search(string ip)
+        {
+            ReadOnlySpan<char> binaryIp = IpToBinary(ip);
+            var node = root;
+            string? longestMatch = null;
+
+            for (int i = 0; i < binaryIp.Length; i++)
+            {
+                byte bit = (byte)(binaryIp[i] - '0');
+                if (node.Children.TryGetValue(bit, out var nextNode))
+                {
+                    node = nextNode;
+                    if (node.IsEndOfPrefix)
+                    {
+                        longestMatch = node.Rule;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return longestMatch;
+        }
+
+        // Parallel search across multiple trie partitions (if the Trie is partitioned)
+        public string? ParallelSearch(List<PatriciaTrie> triePartitions, string ip)
+        {
+            string? result = null;
+            Parallel.ForEach(triePartitions, (trie, state) =>
+            {
+                var localResult = trie.Search(ip);
+                if (localResult != null)
+                {
+                    result = localResult;
+                    state.Break();
+                }
+            });
+            return result;
+        }
+
+        // Async search function
+        public async Task<string?> AsyncSearch(string ip)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            string? matchedRule = await Task.Run(() => Search(ip));
+            stopwatch.Stop();
+            Console.WriteLine($"Async search took {stopwatch.ElapsedMilliseconds} ms.");
+            return matchedRule;
+        }
+    }
+}

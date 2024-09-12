@@ -1,0 +1,98 @@
+namespace Patricia
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+
+    // Represents a node in the Patricia Trie
+    public class PatriciaTrieNode
+    {
+        // Fixed-size array for '0' and '1' children (2 possibilities for each bit)
+        public PatriciaTrieNode[] Children { get; set; } = new PatriciaTrieNode[2];
+        public bool IsEndOfPrefix { get; set; } = false;
+        public string? Rule { get; set; } = null;
+    }
+
+    // Represents the Patricia Trie data structure for storing CIDR prefixes
+    public class PatriciaTrie
+    {
+        private PatriciaTrieNode root = new PatriciaTrieNode();
+
+        // Optimized method to convert IP address to a 32-bit integer
+        public uint IpToBinaryInt(string ip)
+        {
+            var octets = ip.Split('.').Select(byte.Parse).ToArray();
+            return (uint)(octets[0] << 24 | octets[1] << 16 | octets[2] << 8 | octets[3]);
+        }
+
+        // Inserts a CIDR and associated rule into the Patricia Trie
+        public void Insert(string cidr, string rule)
+        {
+            if (cidr.Contains(":")) return; // Skip IPv6 addresses
+
+            var parts = cidr.Split('/');
+            string ip = parts[0];          // Extract the base IP address
+            int prefixLength = int.Parse(parts[1]);  // Extract the prefix length (subnet mask length)
+
+            uint binaryIp = IpToBinaryInt(ip); // Convert IP to binary as a 32-bit integer
+            PatriciaTrieNode node = root;
+
+            // Traverse based on the prefix length
+            for (int i = 31; i >= 32 - prefixLength; i--)
+            {
+                int bit = (int)((binaryIp >> i) & 1);  // Extract the current bit
+
+                if (node.Children[bit] == null)
+                {
+                    node.Children[bit] = new PatriciaTrieNode();
+                }
+
+                node = node.Children[bit];
+            }
+
+            node.IsEndOfPrefix = true;
+            node.Rule = rule;
+        }
+
+        // Search for the longest matching rule in the Trie based on the given IP address
+        public string? Search(string ip)
+        {
+            uint binaryIp = IpToBinaryInt(ip);
+            PatriciaTrieNode node = root;
+            string? longestMatch = null;
+
+            // Traverse the trie based on the 32-bit IP address
+            for (int i = 31; i >= 0; i--)
+            {
+                int bit = (int)((binaryIp >> i) & 1);
+
+                if (node.Children[bit] != null)
+                {
+                    node = node.Children[bit];
+                    if (node.IsEndOfPrefix)
+                    {
+                        longestMatch = node.Rule;
+                    }
+                }
+                else
+                {
+                    break;  // No further match
+                }
+            }
+
+            return longestMatch;
+        }
+
+        // Async search function (removed overhead for Task.Run, simple search now)
+        public async Task<string?> AsyncSearch(string ip)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            string? matchedRule = Search(ip); // Direct search without Task.Run
+            stopwatch.Stop();
+            Console.WriteLine($"Async search took {stopwatch.ElapsedMilliseconds} ms.");
+            return await Task.FromResult(matchedRule);
+        }
+    }
+}

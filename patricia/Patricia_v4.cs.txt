@@ -1,0 +1,115 @@
+
+namespace Patricia
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    public class PatriciaTrieNode
+    {
+        // Fixed-size array for '0' and '1' child nodes
+        public int[] Children { get; set; } = new int[2]; // Child node indices
+        public bool IsEndOfPrefix { get; set; } = false;
+        public string? Rule { get; set; } = null;
+    }
+
+    public class PatriciaTrie
+    {
+        // Contiguous array-based memory allocation for Trie nodes
+        private List<PatriciaTrieNode> nodes = new List<PatriciaTrieNode> { new PatriciaTrieNode() }; // Root node
+
+        // Cache for binary representation of IP addresses to avoid repeated conversion
+        private Dictionary<string, uint> ipCache = new Dictionary<string, uint>();
+
+        // Convert IP address to binary (32-bit integer)
+        public uint IpToBinaryInt(string ip)
+        {
+            if (ipCache.TryGetValue(ip, out uint binaryIp))
+            {
+                return binaryIp;
+            }
+
+            var octets = ip.Split('.').Select(byte.Parse).ToArray();
+            binaryIp = (uint)(octets[0] << 24 | octets[1] << 16 | octets[2] << 8 | octets[3]);
+            ipCache[ip] = binaryIp;
+            return binaryIp;
+        }
+
+        // Insert a CIDR into the Patricia Trie
+        public void Insert(string cidr, string rule)
+        {
+            if (cidr.Contains(":")) return; // Skip IPv6 addresses
+
+            var parts = cidr.Split('/');
+            string ip = parts[0];
+            int prefixLength = int.Parse(parts[1]);
+            uint binaryIp = IpToBinaryInt(ip); // Convert IP to binary
+            int nodeIndex = 0;
+
+            // Traverse the trie based on the prefix length
+            for (int i = 31; i >= 32 - prefixLength; i--)
+            {
+                int bit = (int)((binaryIp >> i) & 1);
+
+                if (nodes[nodeIndex].Children[bit] == 0)
+                {
+                    nodes[nodeIndex].Children[bit] = nodes.Count; // Point to new node
+                    nodes.Add(new PatriciaTrieNode()); // Add new node
+                }
+
+                nodeIndex = nodes[nodeIndex].Children[bit];
+            }
+
+            nodes[nodeIndex].IsEndOfPrefix = true;
+            nodes[nodeIndex].Rule = rule;
+        }
+
+        // Search for the longest matching rule in the Patricia Trie
+        public string? Search(string ip)
+        {
+            uint binaryIp = IpToBinaryInt(ip);
+            int nodeIndex = 0;
+            string? longestMatch = null;
+
+            // Traverse the Trie based on the 32-bit IP address
+            for (int i = 31; i >= 0; i--)
+            {
+                int bit = (int)((binaryIp >> i) & 1);
+
+                if (nodes[nodeIndex].Children[bit] != 0)
+                {
+                    nodeIndex = nodes[nodeIndex].Children[bit];
+                    if (nodes[nodeIndex].IsEndOfPrefix)
+                    {
+                        longestMatch = nodes[nodeIndex].Rule;
+                    }
+                }
+                else
+                {
+                    break; // No further match
+                }
+            }
+
+            return longestMatch;
+        }
+
+        // Parallel search function for batch processing IPs
+        public string? ParallelSearch(List<string> ipAddresses)
+        {
+            string? result = null;
+
+            Parallel.ForEach(ipAddresses, (ip, state) =>
+            {
+                var localResult = Search(ip);
+                if (localResult != null)
+                {
+                    result = localResult;
+                    state.Break(); // Stop other threads once a result is found
+                }
+            });
+
+            return result;
+        }
+    }
+}
