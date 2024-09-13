@@ -1,0 +1,70 @@
+
+
+namespace Patricia.Benchmarks
+{
+    using BenchmarkDotNet.Attributes;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Text.Json;
+    using Patricia;
+    using IPAddressGenerator;
+    public class TrieBenchmark
+    {
+        public PatriciaTrie? trie;
+
+        [GlobalSetup]
+        public async Task Setup()
+        {
+            trie = new PatriciaTrie();
+            // Load CIDR ranges from a local JSON file in the current directory
+            string currentDirectory = Directory.GetCurrentDirectory();
+            string jsonFilePath = Path.Combine(currentDirectory, "ServiceTags_Public_20240909.json");
+            var jsonCidrs = await LoadCidrFromJson(jsonFilePath);
+
+            // Insert the loaded CIDR ranges into the Patricia Trie
+            BatchInsertCidrRanges(jsonCidrs, "Sample Rule");
+        }
+
+        // Loads CIDR ranges from a JSON file and returns them as a list
+        public static async Task<List<string>> LoadCidrFromJson(string filePath)
+        {
+            var jsonData = await File.ReadAllTextAsync(filePath);
+            var jsonDoc = JsonDocument.Parse(jsonData);
+
+            // Extract 'addressPrefixes' from the JSON and return them as a list
+            return jsonDoc.RootElement
+                          .GetProperty("values")
+                          .EnumerateArray()
+                          .SelectMany(element => element.GetProperty("properties").GetProperty("addressPrefixes").EnumerateArray())
+                          .Select(prefix => prefix.GetString() ?? string.Empty)
+                          .ToList();
+        }
+
+        // Batch insert CIDR ranges synchronously
+        public void BatchInsertCidrRanges(List<string> cidrRanges, string rule)
+        {
+            var lockObject = new object();  // Create a lock object to synchronize access
+
+            foreach (var cidr in cidrRanges)
+            {
+                lock (lockObject)  // Lock access to the PatriciaTrie to ensure thread safety
+                {
+                    trie.Insert(cidr, rule);
+                }
+            }
+        }
+       
+        // Perform the lookup operation in the benchmark
+        [Benchmark]
+        public void LookupTest()
+        {
+            List<string> ipAddresses = FakeIpData.LoadFakeIPAddresses(1000000);
+            foreach (var ip in ipAddresses)
+            {
+                // Perform the lookup for each IP
+                var _ = trie?.Search(ip);
+            }
+        }
+    }
+}

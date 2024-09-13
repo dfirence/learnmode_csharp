@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/dfirence/Documents/my_code/csharp/patricia/patricia.csproj": {}
+    "/Users/dfirence/Documents/my_code/csharp/learnmode_csharp/patricia/patricia.csproj": {}
   },
   "projects": {
-    "/Users/dfirence/Documents/my_code/csharp/patricia/patricia.csproj": {
+    "/Users/dfirence/Documents/my_code/csharp/learnmode_csharp/patricia/patricia.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/dfirence/Documents/my_code/csharp/patricia/patricia.csproj",
+        "projectUniqueName": "/Users/dfirence/Documents/my_code/csharp/learnmode_csharp/patricia/patricia.csproj",
         "projectName": "patricia",
-        "projectPath": "/Users/dfirence/Documents/my_code/csharp/patricia/patricia.csproj",
+        "projectPath": "/Users/dfirence/Documents/my_code/csharp/learnmode_csharp/patricia/patricia.csproj",
         "packagesPath": "/Users/dfirence/.nuget/packages/",
-        "outputPath": "/Users/dfirence/Documents/my_code/csharp/patricia/obj/",
+        "outputPath": "/Users/dfirence/Documents/my_code/csharp/learnmode_csharp/patricia/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/dfirence/.nuget/NuGet/NuGet.Config"

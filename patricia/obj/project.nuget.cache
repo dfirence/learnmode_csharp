@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "b7cGJfcToFM=",
+  "dgSpecHash": "j3nNZAHRTKk=",
   "success": true,
-  "projectFilePath": "/Users/dfirence/Documents/my_code/csharp/patricia/patricia.csproj",
+  "projectFilePath": "/Users/dfirence/Documents/my_code/csharp/learnmode_csharp/patricia/patricia.csproj",
   "expectedPackageFiles": [
     "/Users/dfirence/.nuget/packages/benchmarkdotnet/0.13.1/benchmarkdotnet.0.13.1.nupkg.sha512",
     "/Users/dfirence/.nuget/packages/benchmarkdotnet.annotations/0.13.1/benchmarkdotnet.annotations.0.13.1.nupkg.sha512",

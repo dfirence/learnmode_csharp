@@ -10,4 +10,4 @@ Intel Core i9-9980HK CPU 2.40GHz, 1 CPU, 16 logical and 8 physical cores
 ```
 |     Method |     Mean |    Error |   StdDev |
 |----------- |---------:|---------:|---------:|
-| LookupTest | 799.0 ms | 18.58 ms | 53.60 ms |
+| LookupTest | 808.6 ms | 29.60 ms | 85.42 ms |

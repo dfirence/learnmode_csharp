@@ -1,0 +1,138 @@
+// Validating benchmarks:
+// ***** BenchmarkRunner: Start   *****
+// ***** Found 1 benchmark(s) in total *****
+// ***** Building 1 exe(s) in Parallel: Start   *****
+// start dotnet restore  /p:UseSharedCompilation=false /p:BuildInParallel=false /m:1 /p:Deterministic=true /p:Optimize=true in /Users/dfirence/Documents/my_code/csharp/learnmode_csharp/patricia/bin/Release/net8.0/adfbcff1-3319-490c-b0b9-de3731e51775
+// command took 1.54s and exited with 0
+// start dotnet build -c Release  --no-restore /p:UseSharedCompilation=false /p:BuildInParallel=false /m:1 /p:Deterministic=true /p:Optimize=true in /Users/dfirence/Documents/my_code/csharp/learnmode_csharp/patricia/bin/Release/net8.0/adfbcff1-3319-490c-b0b9-de3731e51775
+// command took 2.97s and exited with 0
+// ***** Done, took 00:00:04 (4.57 sec)   *****
+// Found 1 benchmarks:
+//   PatriciaTrieBenchmark.LookupTest: DefaultJob
+
+// **************************
+// Benchmark: PatriciaTrieBenchmark.LookupTest: DefaultJob
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet "adfbcff1-3319-490c-b0b9-de3731e51775.dll" --benchmarkName "Patricia.Benchmarks.PatriciaTrieBenchmark.LookupTest" --job "Default" --benchmarkId 0 in /Users/dfirence/Documents/my_code/csharp/learnmode_csharp/patricia/bin/Release/net8.0/adfbcff1-3319-490c-b0b9-de3731e51775/bin/Release/net8.0
+Failed to set up high priority. Make sure you have the right permissions. Message: Permission denied
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// Runtime=.NET 8.0.5 (8.0.524.21615), X64 RyuJIT
+// GC=Concurrent Workstation
+// Job: DefaultJob
+
+OverheadJitting  1: 1 op, 208464.00 ns, 208.4640 us/op
+WorkloadJitting  1: 1 op, 571421932.00 ns, 571.4219 ms/op
+
+OverheadJitting  2: 1 op, 1074.00 ns, 1.0740 us/op
+WorkloadJitting  2: 1 op, 432461452.00 ns, 432.4615 ms/op
+
+WorkloadWarmup   1: 1 op, 308131836.00 ns, 308.1318 ms/op
+WorkloadWarmup   2: 1 op, 289917311.00 ns, 289.9173 ms/op
+WorkloadWarmup   3: 1 op, 298532383.00 ns, 298.5324 ms/op
+WorkloadWarmup   4: 1 op, 296179923.00 ns, 296.1799 ms/op
+WorkloadWarmup   5: 1 op, 303297357.00 ns, 303.2974 ms/op
+WorkloadWarmup   6: 1 op, 294897556.00 ns, 294.8976 ms/op
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 300180055.00 ns, 300.1801 ms/op
+WorkloadActual   2: 1 op, 294388797.00 ns, 294.3888 ms/op
+WorkloadActual   3: 1 op, 291336944.00 ns, 291.3369 ms/op
+WorkloadActual   4: 1 op, 289107836.00 ns, 289.1078 ms/op
+WorkloadActual   5: 1 op, 298925878.00 ns, 298.9259 ms/op
+WorkloadActual   6: 1 op, 294317019.00 ns, 294.3170 ms/op
+WorkloadActual   7: 1 op, 292865364.00 ns, 292.8654 ms/op
+WorkloadActual   8: 1 op, 291423421.00 ns, 291.4234 ms/op
+WorkloadActual   9: 1 op, 307785859.00 ns, 307.7859 ms/op
+WorkloadActual  10: 1 op, 290103350.00 ns, 290.1033 ms/op
+WorkloadActual  11: 1 op, 292119902.00 ns, 292.1199 ms/op
+WorkloadActual  12: 1 op, 299089231.00 ns, 299.0892 ms/op
+WorkloadActual  13: 1 op, 294201980.00 ns, 294.2020 ms/op
+WorkloadActual  14: 1 op, 291511775.00 ns, 291.5118 ms/op
+WorkloadActual  15: 1 op, 288057788.00 ns, 288.0578 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 300180055.00 ns, 300.1801 ms/op
+WorkloadResult   2: 1 op, 294388797.00 ns, 294.3888 ms/op
+WorkloadResult   3: 1 op, 291336944.00 ns, 291.3369 ms/op
+WorkloadResult   4: 1 op, 289107836.00 ns, 289.1078 ms/op
+WorkloadResult   5: 1 op, 298925878.00 ns, 298.9259 ms/op
+WorkloadResult   6: 1 op, 294317019.00 ns, 294.3170 ms/op
+WorkloadResult   7: 1 op, 292865364.00 ns, 292.8654 ms/op
+WorkloadResult   8: 1 op, 291423421.00 ns, 291.4234 ms/op
+WorkloadResult   9: 1 op, 290103350.00 ns, 290.1033 ms/op
+WorkloadResult  10: 1 op, 292119902.00 ns, 292.1199 ms/op
+WorkloadResult  11: 1 op, 299089231.00 ns, 299.0892 ms/op
+WorkloadResult  12: 1 op, 294201980.00 ns, 294.2020 ms/op
+WorkloadResult  13: 1 op, 291511775.00 ns, 291.5118 ms/op
+WorkloadResult  14: 1 op, 288057788.00 ns, 288.0578 ms/op
+GC:  7 4 1 69213552 1
+Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 12683 has exited with code 0.
+
+Mean = 293.402 ms, StdErr = 1.002 ms (0.34%), N = 14, StdDev = 3.750 ms
+Min = 288.058 ms, Q1 = 291.359 ms, Median = 292.493 ms, Q3 = 294.371 ms, Max = 300.180 ms
+IQR = 3.012 ms, LowerFence = 286.840 ms, UpperFence = 298.889 ms
+ConfidenceInterval = [289.172 ms; 297.632 ms] (CI 99.9%), Margin = 4.230 ms (1.44% of Mean)
+Skewness = 0.5, Kurtosis = 1.96, MValue = 2
+
+// ***** BenchmarkRunner: Finish  *****
+
+// * Export *
+  BenchmarkDotNet.Artifacts/results/Patricia.Benchmarks.PatriciaTrieBenchmark-report.csv
+  BenchmarkDotNet.Artifacts/results/Patricia.Benchmarks.PatriciaTrieBenchmark-report-github.md
+  BenchmarkDotNet.Artifacts/results/Patricia.Benchmarks.PatriciaTrieBenchmark-report.html
+
+// * Detailed results *
+PatriciaTrieBenchmark.LookupTest: DefaultJob
+Runtime = .NET 8.0.5 (8.0.524.21615), X64 RyuJIT; GC = Concurrent Workstation
+Mean = 293.402 ms, StdErr = 1.002 ms (0.34%), N = 14, StdDev = 3.750 ms
+Min = 288.058 ms, Q1 = 291.359 ms, Median = 292.493 ms, Q3 = 294.371 ms, Max = 300.180 ms
+IQR = 3.012 ms, LowerFence = 286.840 ms, UpperFence = 298.889 ms
+ConfidenceInterval = [289.172 ms; 297.632 ms] (CI 99.9%), Margin = 4.230 ms (1.44% of Mean)
+Skewness = 0.5, Kurtosis = 1.96, MValue = 2
+-------------------- Histogram --------------------
+[286.016 ms ; 295.791 ms) | @@@@@@@@@@@
+[295.791 ms ; 302.222 ms) | @@@
+---------------------------------------------------
+
+// * Summary *
+
+BenchmarkDotNet=v0.13.1, OS=macOS 14.6.1 (23G93) [Darwin 23.6.0]
+Intel Core i9-9980HK CPU 2.40GHz, 1 CPU, 16 logical and 8 physical cores
+.NET SDK=8.0.300
+  [Host]     : .NET 8.0.5 (8.0.524.21615), X64 RyuJIT
+  DefaultJob : .NET 8.0.5 (8.0.524.21615), X64 RyuJIT
+
+
+|     Method |     Mean |   Error |  StdDev |     Gen 0 |     Gen 1 |     Gen 2 | Allocated |
+|----------- |---------:|--------:|--------:|----------:|----------:|----------:|----------:|
+| LookupTest | 293.4 ms | 4.23 ms | 3.75 ms | 7000.0000 | 4000.0000 | 1000.0000 |     66 MB |
+
+// * Hints *
+Outliers
+  PatriciaTrieBenchmark.LookupTest: Default -> 1 outlier  was  removed (307.79 ms)
+
+// * Legends *
+  Mean      : Arithmetic mean of all measurements
+  Error     : Half of 99.9% confidence interval
+  StdDev    : Standard deviation of all measurements
+  Gen 0     : GC Generation 0 collects per 1000 operations
+  Gen 1     : GC Generation 1 collects per 1000 operations
+  Gen 2     : GC Generation 2 collects per 1000 operations
+  Allocated : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+  1 ms      : 1 Millisecond (0.001 sec)
+
+// * Diagnostic Output - MemoryDiagnoser *
+
+
+// ***** BenchmarkRunner: End *****
+// ** Remained 0 benchmark(s) to run **
+Run time: 00:00:08 (8.94 sec), executed benchmarks: 1
+
+Global total time: 00:00:13 (13.52 sec), executed benchmarks: 1
+// * Artifacts cleanup *

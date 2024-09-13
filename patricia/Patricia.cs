@@ -27,16 +27,38 @@ namespace Patricia
         // Convert IP address to 32-bit binary integer
         public uint IpToBinaryInt(string ip)
         {
-            if (ipCache.TryGetValue(ip, out uint binaryIp))
+            // Use a Span<char> to avoid creating intermediate string objects
+            ReadOnlySpan<char> ipSpan = ip.AsSpan();
+
+            Span<byte> octets = stackalloc byte[4]; // Allocate octets on the stack to avoid heap allocations
+            int octetIndex = 0;
+
+            // Parse the IP address octets directly from the Span
+            for (int i = 0, start = 0; i <= ipSpan.Length; i++)
             {
-                return binaryIp;
+                if (i == ipSpan.Length || ipSpan[i] == '.')
+                {
+                    octets[octetIndex++] = byte.Parse(ipSpan.Slice(start, i - start));
+                    start = i + 1; // Move start to the next character after '.'
+                }
             }
 
-            var octets = ip.Split('.').Select(byte.Parse).ToArray();
-            binaryIp = (uint)(octets[0] << 24 | octets[1] << 16 | octets[2] << 8 | octets[3]);
-            ipCache[ip] = binaryIp;
-            return binaryIp;
+            // Combine octets into a 32-bit unsigned integer
+            return (uint)(octets[0] << 24 | octets[1] << 16 | octets[2] << 8 | octets[3]);
         }
+
+        // public uint IpToBinaryInt(string ip)
+        // {
+        //     if (ipCache.TryGetValue(ip, out uint binaryIp))
+        //     {
+        //         return binaryIp;
+        //     }
+
+        //     var octets = ip.Split('.').Select(byte.Parse).ToArray();
+        //     binaryIp = (uint)(octets[0] << 24 | octets[1] << 16 | octets[2] << 8 | octets[3]);
+        //     ipCache[ip] = binaryIp;
+        //     return binaryIp;
+        // }
 
         // Insert a CIDR into the Patricia Trie
         public void Insert(string cidr, string rule)

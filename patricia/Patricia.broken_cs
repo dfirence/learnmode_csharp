@@ -1,0 +1,246 @@
+namespace Patricia
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    public class PatriciaTrieNode
+    {
+        // Bit-packed children: 16 bits for each child (for '0' and '1' nodes)
+        private uint children = 0;
+
+        public bool IsEndOfPrefix { get; set; } = false;
+        public int PrefixLength { get; set; } = -1;  // Store prefix length at the end of the prefix
+        public string? Rule { get; set; } = null;
+
+        // Get the index of a child based on the bit (0 or 1)
+        public int GetChild(int bit)
+        {
+            return (int)((children >> (bit * 16)) & 0xFFFF); // Extract 16-bit child index for '0' or '1'
+        }
+
+        // Set the index of a child based on the bit (0 or 1)
+        public void SetChild(int bit, int index)
+        {
+            children = (children & ~(0xFFFFu << (bit * 16))) | ((uint)index << (bit * 16)); // Set 16-bit child index
+        }
+    }
+
+    public class PatriciaTrie
+    {
+        private List<PatriciaTrieNode> nodes = new List<PatriciaTrieNode> { new PatriciaTrieNode() };
+
+        // LRU cache for binary IP conversions
+        private LRUCache<string, uint> ipCache = new LRUCache<string, uint>(capacity: 10000); // Cache with size 10,000
+
+        // Convert IP address to 32-bit binary integer with LRU caching
+        public uint IpToBinaryInt(string ip)
+        {
+            if (ipCache.TryGet(ip, out uint binaryIp))
+            {
+                return binaryIp; // Return cached binary IP if present
+            }
+
+            Span<byte> octets = stackalloc byte[4];
+            int index = 0;
+
+            foreach (var part in ip.Split('.'))
+            {
+                octets[index++] = byte.Parse(part);
+            }
+
+            binaryIp = (uint)(octets[0] << 24 | octets[1] << 16 | octets[2] << 8 | octets[3]);
+            ipCache.Put(ip, binaryIp); // Store the result in LRU cache
+
+            return binaryIp;
+        }
+
+        // Insert a CIDR into the Patricia Trie with bit-packing
+        public void Insert(string cidr, string rule)
+        {
+            if (cidr.Contains(":")) return; // Skip IPv6 addresses for now
+
+            var cidrSpan = cidr.AsSpan();
+            var slashIndex = cidrSpan.IndexOf('/');
+            var ipSpan = cidrSpan.Slice(0, slashIndex);
+            var prefixLengthSpan = cidrSpan.Slice(slashIndex + 1);
+
+            // Convert the prefix length directly
+            int prefixLength = int.Parse(prefixLengthSpan);
+
+            uint binaryIp = IpToBinaryInt(ipSpan.ToString());
+            int nodeIndex = 0;
+
+            for (int i = 31; i >= 32 - prefixLength; i--)
+            {
+                int bit = (int)((binaryIp >> i) & 1); // Extract bit
+                int childIndex = nodes[nodeIndex].GetChild(bit);
+
+                if (childIndex == 0) // If no child, create a new one
+                {
+                    nodes[nodeIndex].SetChild(bit, nodes.Count);
+                    nodes.Add(new PatriciaTrieNode());
+                }
+
+                nodeIndex = nodes[nodeIndex].GetChild(bit); // Move to the child node
+            }
+
+            nodes[nodeIndex].IsEndOfPrefix = true; // Mark the end of the CIDR prefix
+            nodes[nodeIndex].Rule = rule;          // Set the rule for this CIDR prefix
+            nodes[nodeIndex].PrefixLength = prefixLength;  // Store the prefix length
+        }
+
+        // Search for the longest matching rule in the Patricia Trie
+        public string? Search(uint binaryIp)
+        {
+            int nodeIndex = 0;
+            string? longestMatch = null;
+            int longestMatchLength = -1;
+
+            // Traverse the trie bit by bit
+            for (int i = 31; i >= 0; i--)
+            {
+                int bit = (int)((binaryIp >> i) & 1);
+                int childIndex = nodes[nodeIndex].GetChild(bit);
+
+                // No further match possible if no child node exists
+                if (childIndex == 0)
+                {
+                    break;
+                }
+
+                nodeIndex = childIndex;
+
+                // If we are at a valid prefix and its length is better than the previous match
+                if (nodes[nodeIndex].IsEndOfPrefix && nodes[nodeIndex].PrefixLength > longestMatchLength)
+                {
+                    longestMatch = nodes[nodeIndex].Rule;
+                    longestMatchLength = nodes[nodeIndex].PrefixLength;  // Track the longest prefix match
+                }
+            }
+
+            return longestMatch;
+        }
+
+        // Multi-threaded batch lookup for IP addresses using parallelism
+        public List<string?> ParallelBatchSearch(List<string> ipAddresses)
+        {
+            var resultPool = System.Buffers.ArrayPool<string?>.Shared;
+            string?[] results = resultPool.Rent(ipAddresses.Count);
+
+            var binaryIpPool = System.Buffers.ArrayPool<uint>.Shared;
+            uint[] binaryIps = binaryIpPool.Rent(ipAddresses.Count);
+
+            // Convert IPs to binary form ahead of time
+            Parallel.For(0, ipAddresses.Count, i =>
+            {
+                binaryIps[i] = IpToBinaryInt(ipAddresses[i]);
+            });
+
+            // Use a fine-tuned chunk size to balance work across threads
+            int chunkSize = ipAddresses.Count / Environment.ProcessorCount;
+            Parallel.ForEach(System.Collections.Concurrent.Partitioner.Create(0, ipAddresses.Count, chunkSize), range =>
+            {
+                for (int i = range.Item1; i < range.Item2; i++)
+                {
+                    results[i] = Search(binaryIps[i]);
+                }
+            });
+
+            var finalResults = results.Take(ipAddresses.Count).ToList();
+            resultPool.Return(results, clearArray: true);
+            binaryIpPool.Return(binaryIps, clearArray: true);
+
+            return finalResults;
+        }
+    }
+
+    // LRU Cache implementation (Thread-safe)
+    public class LRUCache<TKey, TValue> where TKey : notnull
+    {
+        private readonly int capacity;
+        private readonly Dictionary<TKey, LinkedListNode<LRUCacheItem<TKey, TValue>>> cacheMap;
+        private readonly LinkedList<LRUCacheItem<TKey, TValue>> lruList;
+        private readonly object lockObject = new object();
+
+        public LRUCache(int capacity)
+        {
+            this.capacity = capacity;
+            this.cacheMap = new Dictionary<TKey, LinkedListNode<LRUCacheItem<TKey, TValue>>>(capacity);
+            this.lruList = new LinkedList<LRUCacheItem<TKey, TValue>>();
+        }
+
+        public TValue Get(TKey key)
+        {
+            lock (lockObject)
+            {
+                if (cacheMap.TryGetValue(key, out var node))
+                {
+                    lruList.Remove(node);
+                    lruList.AddFirst(node);
+                    return node.Value.Value;
+                }
+                throw new KeyNotFoundException();
+            }
+        }
+
+        public bool TryGet(TKey key, out TValue value)
+        {
+            lock (lockObject)
+            {
+                if (cacheMap.TryGetValue(key, out var node))
+                {
+                    lruList.Remove(node);
+                    lruList.AddFirst(node);
+                    value = node.Value.Value;
+                    return true;
+                }
+                value = default!;
+                return false;
+            }
+        }
+
+        public void Put(TKey key, TValue value)
+        {
+            lock (lockObject)
+            {
+                if (cacheMap.TryGetValue(key, out var node))
+                {
+                    node.Value.Value = value;
+                    lruList.Remove(node);
+                    lruList.AddFirst(node);
+                }
+                else
+                {
+                    if (cacheMap.Count >= capacity)
+                    {
+                        var lruNode = lruList.Last;
+                        if (lruNode != null)
+                        {
+                            cacheMap.Remove(lruNode.Value.Key);
+                            lruList.RemoveLast();
+                        }
+                    }
+
+                    var newItem = new LRUCacheItem<TKey, TValue>(key, value);
+                    var listNode = new LinkedListNode<LRUCacheItem<TKey, TValue>>(newItem);
+                    lruList.AddFirst(listNode);
+                    cacheMap[key] = listNode;
+                }
+            }
+        }
+
+        private class LRUCacheItem<K, V>
+        {
+            public K Key { get; }
+            public V Value { get; set; }
+
+            public LRUCacheItem(K key, V value)
+            {
+                Key = key;
+                Value = value;
+            }
+        }
+    }
+}
