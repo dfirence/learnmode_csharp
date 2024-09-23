@@ -1,36 +1,58 @@
-/// 
-/// Multi Threaded & Batch Lookup
-/// Parallel.ForEach to distribute the IP lookup load across multiple threads.
-/// This will allow the CPU to handle multiple lookups simultaneously, taking advantage of the available cores.
-/// 
 namespace Patricia
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+
+
     public class PatriciaTrieNode
     {
-        public int[] Children { get; set; } = new int[2]; // Child node indices (for '0' and '1')
+        public int[] Children { get; set; } = new int[2]; 
+// Child node indices (for '0' and '1')
         public bool IsEndOfPrefix { get; set; } = false;
         public string? Rule { get; set; } = null;
     }
 
+
     public class PatriciaTrie
     {
         // List to store the Trie nodes in a contiguous block of memory
-        private List<PatriciaTrieNode> nodes = new List<PatriciaTrieNode> { new PatriciaTrieNode() };
+        private List<PatriciaTrieNode> nodes = new List<PatriciaTrieNode> { new 
+PatriciaTrieNode
+() };
 
         // Cache for binary representation of IP addresses
         private Dictionary<string, uint> ipCache = new Dictionary<string, uint>();
 
+        public long GetTrieSizeNodes()
+        {
+            return nodes.Count;
+        }
+
+        public long GetTrieMemorySize()
+        {
+            long listOverhead = 24;  
+// 24 bytes for the list object itself (on a 64-bit system)
+            long internalArraySize = nodes.Capacity * 8;  
+// 8 bytes per reference in the internal array
+
+            long nodeSize = 24;  
+// Estimated size of each PatriciaTrieNode (24 bytes per node)
+            long totalNodeMemory = nodes.Count * nodeSize;  
+// Total memory for the PatriciaTrieNode objects
+
+            return listOverhead + internalArraySize + totalNodeMemory;
+        }
+                
         // Convert IP address to 32-bit binary integer
         public uint IpToBinaryInt(string ip)
         {
             // Use a Span<char> to avoid creating intermediate string objects
             ReadOnlySpan<char> ipSpan = ip.AsSpan();
 
-            Span<byte> octets = stackalloc byte[4]; // Allocate octets on the stack to avoid heap allocations
+            Span<byte> octets = stackalloc byte[4]; 
+// Allocate octets on the stack to avoid heap allocations
             int octetIndex = 0;
 
             // Parse the IP address octets directly from the Span
@@ -38,29 +60,21 @@ namespace Patricia
             {
                 if (i == ipSpan.Length || ipSpan[i] == '.')
                 {
-                    octets[octetIndex++] = byte.Parse(ipSpan.Slice(start, i - start));
+                    octets[octetIndex++] = byte.Parse(ipSpan.Slice(start, i - 
+start
+));
                     start = i + 1; // Move start to the next character after '.'
                 }
             }
 
             // Combine octets into a 32-bit unsigned integer
-            return (uint)(octets[0] << 24 | octets[1] << 16 | octets[2] << 8 | octets[3]);
+            return (uint)(octets[0] << 24 | octets[1] << 16 | octets[2] << 8 | 
+octets
+[3]);
         }
 
-        // public uint IpToBinaryInt(string ip)
-        // {
-        //     if (ipCache.TryGetValue(ip, out uint binaryIp))
-        //     {
-        //         return binaryIp;
-        //     }
 
-        //     var octets = ip.Split('.').Select(byte.Parse).ToArray();
-        //     binaryIp = (uint)(octets[0] << 24 | octets[1] << 16 | octets[2] << 8 | octets[3]);
-        //     ipCache[ip] = binaryIp;
-        //     return binaryIp;
-        // }
 
-        // Insert a CIDR into the Patricia Trie
         public void Insert(string cidr, string rule)
         {
             if (cidr.Contains(":")) return; // Skip IPv6 addresses
@@ -130,7 +144,9 @@ namespace Patricia
         // Multi-threaded batch lookup for IP addresses using parallelism
         public List<string?> ParallelBatchSearch(List<string> ipAddresses)
         {
-            List<string?> results = new List<string?>(new string?[ipAddresses.Count]);
+            List<string?> results = new List<string?>(new string?[ipAddresses.
+Count
+]);
 
             Parallel.ForEach(System.Collections.Concurrent.Partitioner.Create(0, ipAddresses.Count), range =>
             {
